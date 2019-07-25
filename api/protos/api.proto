@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package pong;
+
+service PongService {
+  rpc Stream (stream PongData) returns (stream PongData) {}
+}
+
+message PongData {
+  Bat bat = 1;
+  Ball ball = 2;
+}
+
+message Bat {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message Ball {
+  int32 x = 1;
+  int32 y = 2;
+}
