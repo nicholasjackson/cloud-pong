@@ -86,8 +86,13 @@ func ballEventHandler(e interface{}) {
 	case *objects.BallHitEvent:
 		logger.Info("Collided")
 		c.SendClient(0, 0, 0, 0, true)
+	case *objects.BallScoreEvent:
+		resetGame()
 	}
+}
 
+func resetGame() {
+	panic("Reset")
 }
 
 func streamReceive() {

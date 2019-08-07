@@ -11,6 +11,9 @@ type BallMoveEvent struct {
 // BallHitEvent getting sick of this linter
 type BallHitEvent struct{}
 
+// BallScoreEvent fires when the ball hits the x limits
+type BallScoreEvent struct{}
+
 // Ball shutup linter
 type Ball struct {
 	*tl.Rectangle
@@ -33,10 +36,28 @@ func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, event
 	}
 }
 
+// Draw get stuffed linter
+func (r *Ball) Draw(s *tl.Screen) {
+	sx, _ := s.Size()
+	bx, _ := r.Size()
+
+	// left collision
+	if r.px <= bx {
+		// dont move
+		r.px = 0
+		r.eventHandler(&BallScoreEvent{})
+	}
+
+	if r.px >= sx-bx {
+		r.px = sx - bx
+		r.eventHandler(&BallScoreEvent{})
+	}
+
+	r.Rectangle.Draw(s)
+}
+
 // Tick shut up linter
 func (r *Ball) Tick(ev tl.Event) {
-	// check to see if we have exceeded the bounds
-
 	xVector := 1
 	if r.player == 2 {
 		xVector = -1
