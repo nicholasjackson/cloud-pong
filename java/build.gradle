@@ -19,6 +19,7 @@ apply plugin: 'idea'
 
 dependencies {
     compile group: 'com.google.protobuf', name: 'protobuf-gradle-plugin', version: '0.8.10'
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.9.1'
     compile group: 'io.grpc', name: 'grpc-netty', version: '1.22.1'
     compile group: 'io.grpc', name: 'grpc-protobuf', version: '1.22.1'
     compile group: 'io.grpc', name: 'grpc-stub', version: '1.22.1'
@@ -41,12 +42,16 @@ protobuf {
     generatedFilesBaseDir = "generated-sources"
 
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.0.0'
+        artifact = 'com.google.protobuf:protoc:3.9.1'
+    }
+
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.22.1'
+        }
     }
 
     generateProtoTasks {
-        all().each { task ->
-        }
         ofSourceSet('main')
     }
 }

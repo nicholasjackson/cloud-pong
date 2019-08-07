@@ -8,12 +8,12 @@ public interface BatOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>optional int32 x = 1;</code>
+   * <code>int32 x = 1;</code>
    */
   int getX();
 
   /**
-   * <code>optional int32 y = 2;</code>
+   * <code>int32 y = 2;</code>
    */
   int getY();
 }

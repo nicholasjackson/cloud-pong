@@ -8,33 +8,33 @@ public interface PongDataOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>optional .pong.Bat bat = 1;</code>
+   * <code>.pong.Bat bat = 1;</code>
    */
   boolean hasBat();
   /**
-   * <code>optional .pong.Bat bat = 1;</code>
+   * <code>.pong.Bat bat = 1;</code>
    */
   com.hashicorp.pong.Bat getBat();
   /**
-   * <code>optional .pong.Bat bat = 1;</code>
+   * <code>.pong.Bat bat = 1;</code>
    */
   com.hashicorp.pong.BatOrBuilder getBatOrBuilder();
 
   /**
-   * <code>optional .pong.Ball ball = 2;</code>
+   * <code>.pong.Ball ball = 2;</code>
    */
   boolean hasBall();
   /**
-   * <code>optional .pong.Ball ball = 2;</code>
+   * <code>.pong.Ball ball = 2;</code>
    */
   com.hashicorp.pong.Ball getBall();
   /**
-   * <code>optional .pong.Ball ball = 2;</code>
+   * <code>.pong.Ball ball = 2;</code>
    */
   com.hashicorp.pong.BallOrBuilder getBallOrBuilder();
 
   /**
-   * <code>optional bool hit = 3;</code>
+   * <code>bool hit = 3;</code>
    */
   boolean getHit();
 }
