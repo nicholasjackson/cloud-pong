@@ -2,6 +2,7 @@ package client
 
 import (
 	"log"
+	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -19,52 +20,107 @@ type GameData struct {
 
 // Client nn
 type Client struct {
-	clientConn *grpc.ClientConn
-	client     pb.PongServiceClient
-	stream     pb.PongService_StreamClient
-	out        chan GameData
+	uri          string
+	clientConn   *grpc.ClientConn
+	client       pb.PongServiceClient
+	clientStream pb.PongService_ClientStreamClient
+	serverStream pb.PongService_ServerStreamClient
+	outClient    chan GameData
+	outServer    chan GameData
 }
 
 // New sss
 func New(uri string) *Client {
-	c := &Client{}
-	c.out = make(chan GameData)
-
-	var err error
-	c.clientConn, err = grpc.Dial(uri, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("failed to connect: %s", err)
-	}
-
-	c.client = pb.NewPongServiceClient(c.clientConn)
-	c.stream, err = c.client.Stream(context.Background())
-	if err != nil {
-		log.Fatalf("Error: %s", err)
-	}
+	c := &Client{uri: uri}
+	c.outClient = make(chan GameData)
+	c.outServer = make(chan GameData)
 
 	return c
 }
 
-// Send something
-func (c *Client) Send(batX, batY, ballX, ballY int) {
-	c.stream.Send(&pb.PongData{
+// Dial syncronously dials the server
+func (c *Client) Dial() {
+	for {
+		var err error
+		c.clientConn, err = grpc.Dial(c.uri, grpc.WithInsecure())
+		if err != nil {
+			log.Printf("failed to connect: %s\n", err)
+		}
+
+		c.client = pb.NewPongServiceClient(c.clientConn)
+		c.clientStream, err = c.client.ClientStream(context.Background())
+		if err != nil {
+			log.Printf("Error: %s\n", err)
+		}
+
+		c.serverStream, err = c.client.ServerStream(context.Background())
+		if err != nil {
+			log.Printf("Error: %s\n", err)
+		}
+
+		if err != nil {
+			// an error has occured dialing wait then retry
+			time.Sleep(1 * time.Second)
+			continue
+		}
+
+		log.Println("Client succesfully connected to the server")
+
+		break
+	}
+}
+
+// DialAsync dials the client, if an error occurs when dialing retries
+func (c *Client) DialAsync() {
+	go func() {
+		c.Dial()
+	}()
+}
+
+// SendClient something
+func (c *Client) SendClient(batX, batY, ballX, ballY int) {
+	c.clientStream.Send(&pb.PongData{
 		Bat:  &pb.Bat{X: int32(batX), Y: int32(batY)},
 		Ball: &pb.Ball{X: int32(ballX), Y: int32(ballY)},
 	})
 }
 
-// Recieve something
-func (c *Client) Recieve() chan GameData {
+// RecieveClient something
+func (c *Client) RecieveClient() chan GameData {
 	go func() {
 		for {
-			resp, err := c.stream.Recv()
+			resp, err := c.clientStream.Recv()
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			c.out <- GameData{BatX: int(resp.Bat.X), BatY: int(resp.Bat.Y)}
+			c.outClient <- GameData{BatX: int(resp.Bat.X), BatY: int(resp.Bat.Y)}
 		}
 	}()
 
-	return c.out
+	return c.outClient
+}
+
+// SendServer something
+func (c *Client) SendServer(batX, batY, ballX, ballY int) {
+	c.serverStream.Send(&pb.PongData{
+		Bat:  &pb.Bat{X: int32(batX), Y: int32(batY)},
+		Ball: &pb.Ball{X: int32(ballX), Y: int32(ballY)},
+	})
+}
+
+// RecieveServer something
+func (c *Client) RecieveServer() chan GameData {
+	go func() {
+		for {
+			resp, err := c.serverStream.Recv()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			c.outServer <- GameData{BatX: int(resp.Bat.X), BatY: int(resp.Bat.Y)}
+		}
+	}()
+
+	return c.outServer
 }

@@ -174,7 +174,7 @@ func init() {
 func init() { proto.RegisterFile("api.proto", fileDescriptor_00212fb1f9d3bf1c) }
 
 var fileDescriptor_00212fb1f9d3bf1c = []byte{
-	// 176 bytes of a gzipped FileDescriptorProto
+	// 191 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4c, 0x2c, 0xc8, 0xd4,
 	0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x29, 0xc8, 0xcf, 0x4b, 0x57, 0x72, 0xe7, 0xe2, 0x08,
 	0xc8, 0xcf, 0x4b, 0x77, 0x49, 0x2c, 0x49, 0x14, 0x92, 0xe6, 0x62, 0x4e, 0x4a, 0x2c, 0x91, 0x60,
@@ -182,10 +182,11 @@ var fileDescriptor_00212fb1f9d3bf1c = []byte{
 	0x85, 0xe4, 0xb8, 0x58, 0x92, 0x12, 0x73, 0x72, 0x24, 0x98, 0xc0, 0xb2, 0x5c, 0x30, 0xd9, 0x9c,
 	0x9c, 0x20, 0xb0, 0xb8, 0x92, 0x22, 0x17, 0xb3, 0x53, 0x62, 0x89, 0x10, 0x0f, 0x17, 0x63, 0x05,
 	0xd8, 0x04, 0xd6, 0x20, 0xc6, 0x0a, 0x10, 0xaf, 0x12, 0xac, 0x83, 0x35, 0x88, 0xb1, 0x52, 0x49,
-	0x89, 0x8b, 0x05, 0xa4, 0x01, 0x9f, 0x1a, 0x23, 0x5b, 0x2e, 0x6e, 0x90, 0x7b, 0x82, 0x53, 0x8b,
-	0xca, 0x32, 0x93, 0x53, 0x85, 0xf4, 0xb8, 0xd8, 0x82, 0x4b, 0x8a, 0x52, 0x13, 0x73, 0x85, 0xf8,
-	0x20, 0x36, 0xc2, 0x1c, 0x2b, 0x85, 0xc6, 0x57, 0x62, 0xd0, 0x60, 0x34, 0x60, 0x4c, 0x62, 0x03,
-	0xfb, 0xcd, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0xb3, 0x2f, 0xba, 0xab, 0xe8, 0x00, 0x00, 0x00,
+	0x89, 0x8b, 0x05, 0xa4, 0x01, 0x9f, 0x1a, 0xa3, 0x4a, 0x2e, 0x6e, 0x90, 0x7b, 0x82, 0x53, 0x8b,
+	0xca, 0x32, 0x93, 0x53, 0x85, 0x4c, 0xb8, 0x78, 0x9c, 0x73, 0x32, 0x53, 0xf3, 0x4a, 0x82, 0x4b,
+	0x8a, 0x52, 0x13, 0x73, 0x85, 0xf8, 0x20, 0xf6, 0xc2, 0x9c, 0x2c, 0x85, 0xc6, 0x57, 0x62, 0xd0,
+	0x60, 0x34, 0x60, 0x04, 0xe9, 0x02, 0x19, 0x90, 0x5a, 0x44, 0x8a, 0xae, 0x24, 0x36, 0x70, 0xb8,
+	0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x9f, 0x8a, 0x5c, 0x36, 0x24, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -200,7 +201,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type PongServiceClient interface {
-	Stream(ctx context.Context, opts ...grpc.CallOption) (PongService_StreamClient, error)
+	ClientStream(ctx context.Context, opts ...grpc.CallOption) (PongService_ClientStreamClient, error)
+	ServerStream(ctx context.Context, opts ...grpc.CallOption) (PongService_ServerStreamClient, error)
 }
 
 type pongServiceClient struct {
@@ -211,30 +213,61 @@ func NewPongServiceClient(cc *grpc.ClientConn) PongServiceClient {
 	return &pongServiceClient{cc}
 }
 
-func (c *pongServiceClient) Stream(ctx context.Context, opts ...grpc.CallOption) (PongService_StreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_PongService_serviceDesc.Streams[0], "/pong.PongService/Stream", opts...)
+func (c *pongServiceClient) ClientStream(ctx context.Context, opts ...grpc.CallOption) (PongService_ClientStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_PongService_serviceDesc.Streams[0], "/pong.PongService/ClientStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &pongServiceStreamClient{stream}
+	x := &pongServiceClientStreamClient{stream}
 	return x, nil
 }
 
-type PongService_StreamClient interface {
+type PongService_ClientStreamClient interface {
 	Send(*PongData) error
 	Recv() (*PongData, error)
 	grpc.ClientStream
 }
 
-type pongServiceStreamClient struct {
+type pongServiceClientStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *pongServiceStreamClient) Send(m *PongData) error {
+func (x *pongServiceClientStreamClient) Send(m *PongData) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *pongServiceStreamClient) Recv() (*PongData, error) {
+func (x *pongServiceClientStreamClient) Recv() (*PongData, error) {
+	m := new(PongData)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *pongServiceClient) ServerStream(ctx context.Context, opts ...grpc.CallOption) (PongService_ServerStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_PongService_serviceDesc.Streams[1], "/pong.PongService/ServerStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &pongServiceServerStreamClient{stream}
+	return x, nil
+}
+
+type PongService_ServerStreamClient interface {
+	Send(*PongData) error
+	Recv() (*PongData, error)
+	grpc.ClientStream
+}
+
+type pongServiceServerStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *pongServiceServerStreamClient) Send(m *PongData) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *pongServiceServerStreamClient) Recv() (*PongData, error) {
 	m := new(PongData)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -244,40 +277,70 @@ func (x *pongServiceStreamClient) Recv() (*PongData, error) {
 
 // PongServiceServer is the server API for PongService service.
 type PongServiceServer interface {
-	Stream(PongService_StreamServer) error
+	ClientStream(PongService_ClientStreamServer) error
+	ServerStream(PongService_ServerStreamServer) error
 }
 
 // UnimplementedPongServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedPongServiceServer struct {
 }
 
-func (*UnimplementedPongServiceServer) Stream(srv PongService_StreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
+func (*UnimplementedPongServiceServer) ClientStream(srv PongService_ClientStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method ClientStream not implemented")
+}
+func (*UnimplementedPongServiceServer) ServerStream(srv PongService_ServerStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method ServerStream not implemented")
 }
 
 func RegisterPongServiceServer(s *grpc.Server, srv PongServiceServer) {
 	s.RegisterService(&_PongService_serviceDesc, srv)
 }
 
-func _PongService_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(PongServiceServer).Stream(&pongServiceStreamServer{stream})
+func _PongService_ClientStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(PongServiceServer).ClientStream(&pongServiceClientStreamServer{stream})
 }
 
-type PongService_StreamServer interface {
+type PongService_ClientStreamServer interface {
 	Send(*PongData) error
 	Recv() (*PongData, error)
 	grpc.ServerStream
 }
 
-type pongServiceStreamServer struct {
+type pongServiceClientStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *pongServiceStreamServer) Send(m *PongData) error {
+func (x *pongServiceClientStreamServer) Send(m *PongData) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *pongServiceStreamServer) Recv() (*PongData, error) {
+func (x *pongServiceClientStreamServer) Recv() (*PongData, error) {
+	m := new(PongData)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _PongService_ServerStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(PongServiceServer).ServerStream(&pongServiceServerStreamServer{stream})
+}
+
+type PongService_ServerStreamServer interface {
+	Send(*PongData) error
+	Recv() (*PongData, error)
+	grpc.ServerStream
+}
+
+type pongServiceServerStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *pongServiceServerStreamServer) Send(m *PongData) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *pongServiceServerStreamServer) Recv() (*PongData, error) {
 	m := new(PongData)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -291,8 +354,14 @@ var _PongService_serviceDesc = grpc.ServiceDesc{
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Stream",
-			Handler:       _PongService_Stream_Handler,
+			StreamName:    "ClientStream",
+			Handler:       _PongService_ClientStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "ServerStream",
+			Handler:       _PongService_ServerStream_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

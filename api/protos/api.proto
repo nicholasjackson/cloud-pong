@@ -3,7 +3,8 @@ syntax = "proto3";
 package pong;
 
 service PongService {
-  rpc Stream (stream PongData) returns (stream PongData) {}
+  rpc ClientStream (stream PongData) returns (stream PongData) {}
+  rpc ServerStream (stream PongData) returns (stream PongData) {}
 }
 
 message PongData {
