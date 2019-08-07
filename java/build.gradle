@@ -6,14 +6,15 @@ plugins {
 group 'com.hashicorp'
 version '1.0-SNAPSHOT'
 
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'idea'
+
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
-
-apply plugin: 'java'
-apply plugin: 'com.google.protobuf'
 
 dependencies {
     compile group: 'com.google.protobuf', name: 'protobuf-gradle-plugin', version: '0.8.10'
@@ -28,16 +29,21 @@ sourceSets {
         proto {
             srcDir '../api/protos'
         }
+        java {
+            // include self written and generated code
+            srcDirs 'src/main/java', 'generated-sources/main/java'
+        }
     }
 }
 
 protobuf {
+    generatedFilesBaseDir = "generated-sources"
+
     protoc {
-        // Download from repositories
         artifact = 'com.google.protobuf:protoc:3.0.0'
     }
+
     generateProtoTasks {
-        // all() returns the collection of all protoc tasks
         all().each { task ->
         }
         ofSourceSet('main')
