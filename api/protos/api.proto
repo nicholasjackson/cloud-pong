@@ -10,6 +10,7 @@ service PongService {
 message PongData {
   Bat bat = 1;
   Ball ball = 2;
+  bool hit = 3;
 }
 
 message Bat {

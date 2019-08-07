@@ -34,10 +34,15 @@ func (s *PongServer) ClientStream(stream pb.PongService_ClientStreamServer) erro
 			return err
 		}
 
-		s.logger.Info("Got bat", "handler", "client", "x", in.Bat.X, "y", in.Bat.Y)
+		s.logger.Info(
+			"Got event", "handler", "client",
+			"bat-x", in.Bat.X,
+			"bat-y", in.Bat.Y,
+			"ball-x", in.Ball.X,
+			"ball-y", in.Ball.Y)
 
 		// forward the message to the other server
-		s.apiClient.SendServer(int(in.Bat.X), int(in.Bat.Y), 0, 0) // send data back
+		s.apiClient.SendServer(int(in.Bat.X), int(in.Bat.Y), int(in.Ball.X), int(in.Ball.Y), in.Hit) // send data back
 	}
 }
 
@@ -57,10 +62,14 @@ func (s *PongServer) ServerStream(stream pb.PongService_ServerStreamServer) erro
 			return err
 		}
 
-		s.logger.Info("Got bat", "handler", "server", "x", in.Bat.X, "y", in.Bat.Y)
+		s.logger.Info(
+			"Got event", "handler", "server",
+			"bat-x", in.Bat.X,
+			"bat-y", in.Bat.Y,
+			"ball-x", in.Ball.X,
+			"ball-y", in.Ball.Y)
 
 		// forward the message to the client
-		//s.apiClient.SendServer(int(in.Bat.X), int(in.Bat.Y), 0, 0) // send data back
-		s.serverClient.Send(&pb.PongData{Bat: &pb.Bat{X: in.Bat.X, Y: in.Bat.Y}}) // send data back
+		s.serverClient.Send(in)
 	}
 }

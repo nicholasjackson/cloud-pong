@@ -19,6 +19,7 @@ var apiURI = env.String("API_URI", false, "localhost:6000", "URI for the api ser
 
 var bat1 *objects.Bat
 var bat2 *objects.Bat
+var ball *objects.Ball
 
 var logger hclog.Logger
 
@@ -43,9 +44,11 @@ func main() {
 	if *player == 1 {
 		bat1 = objects.NewBat(3, 3, 3, 6, tl.ColorRed, 0, true, batEventHandler)
 		bat2 = objects.NewBat(3, 4, 3, 6, tl.ColorGreen, -3, false, nil)
+		ball = objects.NewBall(6, 6, 3, 2, tl.ColorBlack, true, *player, ballEventHandler)
 	} else {
 		bat1 = objects.NewBat(3, 3, 3, 6, tl.ColorRed, 0, false, nil)
 		bat2 = objects.NewBat(3, 4, 3, 6, tl.ColorGreen, -3, true, batEventHandler)
+		ball = objects.NewBall(6, 6, 3, 2, tl.ColorBlack, false, *player, ballEventHandler)
 	}
 
 	g := tl.NewGame()
@@ -54,8 +57,12 @@ func main() {
 		Bg: tl.ColorWhite,
 	})
 
+	// add the bats
 	l.AddEntity(bat1)
 	l.AddEntity(bat2)
+
+	// add the ball
+	l.AddEntity(ball)
 
 	g.Screen().SetLevel(l)
 	g.Screen().AddEntity(tl.NewFpsText(0, 0, tl.ColorRed, tl.ColorDefault, 0.5))
@@ -64,23 +71,47 @@ func main() {
 }
 
 func batEventHandler(e interface{}) {
-	logger.Info("Send pos to server")
+	logger.Info("Send bat pos to server")
 	batPos := e.(*objects.BatMoveEvent)
 
-	c.SendClient(batPos.X, batPos.Y, 0, 0)
+	c.SendClient(batPos.X, batPos.Y, 0, 0, false)
+}
+
+func ballEventHandler(e interface{}) {
+	switch e.(type) {
+	case *objects.BallMoveEvent:
+		logger.Info("Send ball pos to server")
+		ballPos := e.(*objects.BallMoveEvent)
+		c.SendClient(0, 0, ballPos.X, ballPos.Y, false)
+	case *objects.BallHitEvent:
+		logger.Info("Collided")
+		c.SendClient(0, 0, 0, 0, true)
+	}
+
 }
 
 func streamReceive() {
 	for d := range c.RecieveClient() {
+		logger.Info("move", "event", d)
 
-		if *player == 1 {
-			logger.Info("move bat 2")
-			bat2.SetPos(-3, d.BatY)
-		} else {
-			logger.Info("move bat 1")
-			bat1.SetPos(3, d.BatY)
+		if d.BatX != 0 || d.BatY != 0 {
+			if *player == 1 {
+				bat2.SetPos(-3, d.BatY)
+			} else {
+				if d.BatY != 0 {
+					bat1.SetPos(3, d.BatY)
+				}
+			}
 		}
 
-		logger.Info("something", "y", d.BatY)
+		// figure out if we have lost control
+		if (d.BallX != 0 || d.BallY != 0) && !ball.IsControlled() {
+			ball.SetPos(d.BallX, d.BallY)
+		}
+
+		if d.Hit {
+			// remove control
+			ball.SetControl(false)
+		}
 	}
 }

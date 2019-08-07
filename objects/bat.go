@@ -85,6 +85,11 @@ func (r *Bat) Collide(p tl.Physical) {
 	*/
 }
 
+// IsControlled is this bat user controlled?
+func (r *Bat) IsControlled() bool {
+	return r.isControlled
+}
+
 func (r *Bat) handleEvent(e interface{}) {
 	r.eventHandler(e)
 }

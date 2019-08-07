@@ -16,6 +16,7 @@ type GameData struct {
 	BatY  int
 	BallX int
 	BallY int
+	Hit   bool
 }
 
 // Client nn
@@ -78,10 +79,11 @@ func (c *Client) DialAsync() {
 }
 
 // SendClient something
-func (c *Client) SendClient(batX, batY, ballX, ballY int) {
+func (c *Client) SendClient(batX, batY, ballX, ballY int, hit bool) {
 	c.clientStream.Send(&pb.PongData{
 		Bat:  &pb.Bat{X: int32(batX), Y: int32(batY)},
 		Ball: &pb.Ball{X: int32(ballX), Y: int32(ballY)},
+		Hit:  hit,
 	})
 }
 
@@ -94,7 +96,7 @@ func (c *Client) RecieveClient() chan GameData {
 				log.Fatal(err)
 			}
 
-			c.outClient <- GameData{BatX: int(resp.Bat.X), BatY: int(resp.Bat.Y)}
+			c.outClient <- GameData{BatX: int(resp.Bat.X), BatY: int(resp.Bat.Y), BallX: int(resp.Ball.X), BallY: int(resp.Ball.Y), Hit: resp.Hit}
 		}
 	}()
 
@@ -102,10 +104,11 @@ func (c *Client) RecieveClient() chan GameData {
 }
 
 // SendServer something
-func (c *Client) SendServer(batX, batY, ballX, ballY int) {
+func (c *Client) SendServer(batX, batY, ballX, ballY int, hit bool) {
 	c.serverStream.Send(&pb.PongData{
 		Bat:  &pb.Bat{X: int32(batX), Y: int32(batY)},
 		Ball: &pb.Ball{X: int32(ballX), Y: int32(ballY)},
+		Hit:  hit,
 	})
 }
 
