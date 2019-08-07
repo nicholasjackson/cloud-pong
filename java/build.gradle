@@ -1,20 +1,21 @@
 plugins {
-    id "com.google.protobuf" version "0.8.10"
     id 'java'
+    id "com.google.protobuf" version "0.8.10"
 }
 
 group 'com.hashicorp'
 version '1.0-SNAPSHOT'
 
-apply plugin: 'java'
-apply plugin: 'com.google.protobuf'
-apply plugin: 'idea'
-
-sourceCompatibility = 1.8
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 repositories {
     mavenCentral()
 }
+
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'idea'
 
 dependencies {
     compile group: 'com.google.protobuf', name: 'protobuf-gradle-plugin', version: '0.8.10'
