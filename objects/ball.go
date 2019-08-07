@@ -35,6 +35,8 @@ func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, event
 
 // Tick shut up linter
 func (r *Ball) Tick(ev tl.Event) {
+	// check to see if we have exceeded the bounds
+
 	xVector := 1
 	if r.player == 2 {
 		xVector = -1
@@ -46,7 +48,6 @@ func (r *Ball) Tick(ev tl.Event) {
 	}
 
 	r.SetPosition(r.px, r.py)
-
 }
 
 // GetPos shut up

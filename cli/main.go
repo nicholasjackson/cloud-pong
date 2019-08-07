@@ -43,12 +43,12 @@ func main() {
 
 	if *player == 1 {
 		bat1 = objects.NewBat(3, 3, 3, 6, tl.ColorRed, 0, true, batEventHandler)
-		bat2 = objects.NewBat(3, 4, 3, 6, tl.ColorGreen, -3, false, nil)
-		ball = objects.NewBall(6, 6, 3, 2, tl.ColorBlack, true, *player, ballEventHandler)
+		bat2 = objects.NewBat(3, 3, 3, 6, tl.ColorGreen, -3, false, nil)
+		ball = objects.NewBall(6, 5, 3, 2, tl.ColorBlack, true, *player, ballEventHandler)
 	} else {
 		bat1 = objects.NewBat(3, 3, 3, 6, tl.ColorRed, 0, false, nil)
-		bat2 = objects.NewBat(3, 4, 3, 6, tl.ColorGreen, -3, true, batEventHandler)
-		ball = objects.NewBall(6, 6, 3, 2, tl.ColorBlack, false, *player, ballEventHandler)
+		bat2 = objects.NewBat(3, 3, 3, 6, tl.ColorGreen, -3, true, batEventHandler)
+		ball = objects.NewBall(6, 5, 3, 2, tl.ColorBlack, false, *player, ballEventHandler)
 	}
 
 	g := tl.NewGame()
