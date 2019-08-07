@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 package pong;
+option java_package = "com.hashicorp.pong";
+option java_multiple_files = true;
 
 service PongService {
   rpc ClientStream (stream PongData) returns (stream PongData) {}
