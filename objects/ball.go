@@ -26,6 +26,7 @@ type Ball struct {
 	player       int
 	isControlled bool
 	isInPlay     bool
+	isStarted    bool
 	eventHandler func(e interface{})
 	xVector      float64
 	yVector      float64
@@ -47,6 +48,7 @@ func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, event
 		player:       player,
 		isControlled: isControlled,
 		isInPlay:     true,
+		isStarted:    !isControlled,
 		eventHandler: eventHandler,
 		xVector:      xVector,
 		yVector:      0,
@@ -91,11 +93,20 @@ func (r *Ball) Draw(s *tl.Screen) {
 
 // Tick shut up linter
 func (r *Ball) Tick(ev tl.Event) {
+	// press space to start the game
+
+	if ev.Type == tl.EventKey && r.isControlled && r.isInPlay {
+		switch ev.Key {
+		case tl.KeySpace:
+			r.isStarted = true
+		}
+	}
+
 	if !r.isInPlay {
 		return
 	}
 
-	if r.isControlled {
+	if r.isControlled && r.isStarted {
 		r.px += r.xVector * r.speed
 		r.py += r.yVector * r.speed
 
