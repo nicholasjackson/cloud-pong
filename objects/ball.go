@@ -66,14 +66,23 @@ func (r *Ball) Draw(s *tl.Screen) {
 	fbx, fby := float64(bx), float64(by)
 
 	// is this the first draw if so set to center
-	if r.py == 0 && r.player == 1 && r.isControlled {
-		r.py = (fsy / 2) - (fby / 2)
+	if r.py == 0 && r.isControlled {
+		if r.player == 1 {
+			r.py = (fsy / 2) - (fby / 2)
+		} else {
+			r.py = (fsy / 2) - (fby / 2)
+			r.px = float64(sx) - 8
+		}
 		return
 	}
 
-	if r.py == 0 && r.player == 2 && r.isControlled {
-		r.py = (fsy / 2) - (fby / 2)
-		r.px = float64(sx) - 8
+	if r.py == 0 && !r.isControlled {
+		if r.player == 1 {
+			r.py = (fsy / 2) - (fby / 2)
+			r.px = float64(sx) - 8
+		} else {
+			r.py = (fsy / 2) - (fby / 2)
+		}
 		return
 	}
 
