@@ -31,14 +31,15 @@ type Ball struct {
 	xVector      float64
 	yVector      float64
 	speed        float64
+	initialSpeed float64
 }
 
 // NewBall shutup linter
 func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, eventHandler func(e interface{})) *Ball {
-	intialSpeed := 0.6
-	xVector := intialSpeed
+	initialSpeed := 0.6
+	xVector := initialSpeed
 	if player == 2 {
-		xVector = -intialSpeed
+		xVector = -initialSpeed
 	}
 
 	return &Ball{
@@ -52,7 +53,8 @@ func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, event
 		eventHandler: eventHandler,
 		xVector:      xVector,
 		yVector:      0,
-		speed:        intialSpeed,
+		speed:        initialSpeed,
+		initialSpeed: initialSpeed,
 	}
 }
 
@@ -64,26 +66,31 @@ func (r *Ball) Draw(s *tl.Screen) {
 	fbx, fby := float64(bx), float64(by)
 
 	// is this the first draw if so set to center
-	if r.py == 0 {
+	if r.py == 0 && r.player == 1 && r.isControlled {
 		r.py = (fsy / 2) - (fby / 2)
+		return
+	}
+
+	if r.py == 0 && r.player == 2 && r.isControlled {
+		r.py = (fsy / 2) - (fby / 2)
+		r.px = float64(sx) - 8
 		return
 	}
 
 	// left collision
 	if r.px <= 0 && r.isInPlay {
 		// dont move
-		r.px = 0
 		r.isInPlay = false
 		r.eventHandler(&BallScoreEvent{2})
 	}
 
+	// right collision
 	if r.px >= fsx-fbx && r.isInPlay {
 		r.isInPlay = false
-		r.px = fsx - fbx
 		r.eventHandler(&BallScoreEvent{1})
 	}
 
-	// if the ball goes out of bounds set the y
+	// if the ball goes out of bounds vertically flip the y direction
 	if (r.py < 0 || r.py >= fsy) && r.isInPlay {
 		r.yVector = -r.yVector
 	}
@@ -163,4 +170,20 @@ func (r *Ball) SetControl(c bool) {
 // IsControlled no
 func (r *Ball) IsControlled() bool {
 	return r.isControlled
+}
+
+// Reset the original settings of the ball
+func (r *Ball) Reset() {
+	r.px = 6
+	r.py = 0
+	r.SetPosition(int(r.px), int(r.py))
+	r.isStarted = !r.isControlled
+	r.isInPlay = true
+
+	// reset the speed
+	r.xVector = r.initialSpeed
+	r.yVector = 0
+	if r.player == 2 {
+		r.xVector = -r.initialSpeed
+	}
 }

@@ -11,6 +11,7 @@ message PongData {
   Bat bat = 1;
   Ball ball = 2;
   bool hit = 3;
+  int32 score = 4;
 }
 
 message Bat {

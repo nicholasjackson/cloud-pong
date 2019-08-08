@@ -128,3 +128,9 @@ func (r *Bat) IsControlled() bool {
 func (r *Bat) handleEvent(e interface{}) {
 	r.eventHandler(e)
 }
+
+// Reset the original settings of the bat
+func (r *Bat) Reset() {
+	r.py = 0
+	r.SetPosition(r.px, r.py)
+}

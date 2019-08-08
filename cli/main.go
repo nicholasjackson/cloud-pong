@@ -91,7 +91,7 @@ func batEventHandler(e interface{}) {
 	logger.Info("Send bat pos to server")
 	batPos := e.(*objects.BatMoveEvent)
 
-	c.SendClient(batPos.X, batPos.Y, 0, 0, false)
+	c.SendClient(batPos.X, batPos.Y, 0, 0, false, 0)
 }
 
 func ballEventHandler(e interface{}) {
@@ -99,12 +99,15 @@ func ballEventHandler(e interface{}) {
 	case *objects.BallMoveEvent:
 		logger.Info("Send ball pos to server")
 		ballPos := e.(*objects.BallMoveEvent)
-		c.SendClient(0, 0, ballPos.X, ballPos.Y, false)
+		c.SendClient(0, 0, ballPos.X, ballPos.Y, false, 0)
 	case *objects.BallHitEvent:
 		logger.Info("Collided")
-		c.SendClient(0, 0, 0, 0, true)
+		c.SendClient(0, 0, 0, 0, true, 0)
 	case *objects.BallScoreEvent:
 		scoreGame(ev.Player)
+		resetGame()
+
+		c.SendClient(0, 0, 0, 0, false, ev.Player)
 	}
 }
 
@@ -115,6 +118,13 @@ func scoreGame(player int) {
 	}
 
 	p2s.IncrementScore()
+}
+
+func resetGame() {
+	// reset the bat and ball position
+	bat1.Reset()
+	bat2.Reset()
+	ball.Reset()
 }
 
 func streamReceive() {
@@ -131,14 +141,19 @@ func streamReceive() {
 			}
 		}
 
-		// figure out if we have lost control
 		if (d.BallX != 0 || d.BallY != 0) && !ball.IsControlled() {
 			ball.SetPos(d.BallX, d.BallY)
 		}
 
+		// figure out if we have lost control
 		if d.Hit {
 			// remove control
 			ball.SetControl(false)
+		}
+
+		if d.Score > 0 {
+			scoreGame(d.Score)
+			resetGame()
 		}
 	}
 }
