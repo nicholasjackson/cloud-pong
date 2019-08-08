@@ -124,6 +124,8 @@ func (r *Ball) Collide(p tl.Physical) {
 
 	// only detect a collision if it hits our controlled bat and we are not controlling the ball
 	if bat, ok := p.(*Bat); ok && bat.IsControlled() && !r.IsControlled() {
+		r.speed = r.speed * 1.5
+
 		r.isControlled = true
 		r.eventHandler(&BallHitEvent{})
 
@@ -137,7 +139,7 @@ func (r *Ball) Collide(p tl.Physical) {
 		cbat := batSizeY/2 + batPosY    // center of bat
 		cball := ballSizeY/2 + ballPosY //center of ball
 
-		r.yVector = (float64(cball-cbat) * r.speed) / 3
+		r.yVector = (float64(cball-cbat) * r.speed) / 6
 	}
 
 }

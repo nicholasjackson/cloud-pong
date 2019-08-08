@@ -101,7 +101,7 @@ func (r *Bat) Tick(ev tl.Event) {
 		}
 	} else {
 		// reset the bat speed after a timeout
-		if time.Now().Sub(r.lastPress) > 100*time.Millisecond {
+		if time.Now().Sub(r.lastPress) > 200*time.Millisecond {
 			r.speed = 1
 		}
 	}
