@@ -57,9 +57,15 @@ func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, event
 // Draw get stuffed linter
 func (r *Ball) Draw(s *tl.Screen) {
 	sx, sy := s.Size()
-	bx, _ := r.Size()
+	bx, by := r.Size()
 	fsx, fsy := float64(sx), float64(sy)
-	fbx := float64(bx)
+	fbx, fby := float64(bx), float64(by)
+
+	// is this the first draw if so set to center
+	if r.py == 0 {
+		r.py = (fsy / 2) - (fby / 2)
+		return
+	}
 
 	// left collision
 	if r.px <= 0 && r.isInPlay {
@@ -131,7 +137,7 @@ func (r *Ball) Collide(p tl.Physical) {
 		cbat := batSizeY/2 + batPosY    // center of bat
 		cball := ballSizeY/2 + ballPosY //center of ball
 
-		r.yVector = float64(cball-cbat) * r.speed / 2
+		r.yVector = (float64(cball-cbat) * r.speed) / 3
 	}
 
 }
