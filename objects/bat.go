@@ -17,6 +17,7 @@ type Bat struct {
 	py           int
 	offsetRight  int
 	isControlled bool
+	speed        int
 	eventHandler func(e interface{})
 }
 
@@ -28,6 +29,7 @@ func NewBat(x, y, w, h int, color tl.Attr, offsetRight int, isControlled bool, e
 		py:           y,
 		offsetRight:  offsetRight,
 		isControlled: isControlled,
+		speed:        1,
 		eventHandler: eventHandler,
 	}
 }
@@ -61,9 +63,9 @@ func (r *Bat) Tick(ev tl.Event) {
 	if ev.Type == tl.EventKey && r.isControlled {
 		switch ev.Key {
 		case tl.KeyArrowUp:
-			r.py--
+			r.py -= r.speed
 		case tl.KeyArrowDown:
-			r.py++
+			r.py += r.speed
 		}
 
 		if r.isControlled {

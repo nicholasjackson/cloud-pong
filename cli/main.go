@@ -21,6 +21,9 @@ var bat1 *objects.Bat
 var bat2 *objects.Bat
 var ball *objects.Ball
 
+var p1s *objects.Score
+var p2s *objects.Score
+
 var logger hclog.Logger
 
 func main() {
@@ -51,6 +54,13 @@ func main() {
 		ball = objects.NewBall(6, 5, 3, 2, tl.ColorBlack, false, *player, ballEventHandler)
 	}
 
+	// create the net
+	net := objects.NewNet(tl.ColorBlack)
+
+	// create player1 score
+	p1s = objects.NewScore(-14, 3, tl.ColorBlack)
+	p2s = objects.NewScore(3, 3, tl.ColorBlack)
+
 	g := tl.NewGame()
 	g.Screen().SetFps(60)
 	l := tl.NewBaseLevel(tl.Cell{
@@ -63,6 +73,13 @@ func main() {
 
 	// add the ball
 	l.AddEntity(ball)
+
+	// add the net
+	l.AddEntity(net)
+
+	// add the scores
+	l.AddEntity(p1s)
+	l.AddEntity(p2s)
 
 	g.Screen().SetLevel(l)
 	g.Screen().AddEntity(tl.NewFpsText(0, 0, tl.ColorRed, tl.ColorDefault, 0.5))
@@ -78,7 +95,7 @@ func batEventHandler(e interface{}) {
 }
 
 func ballEventHandler(e interface{}) {
-	switch e.(type) {
+	switch ev := e.(type) {
 	case *objects.BallMoveEvent:
 		logger.Info("Send ball pos to server")
 		ballPos := e.(*objects.BallMoveEvent)
@@ -87,12 +104,17 @@ func ballEventHandler(e interface{}) {
 		logger.Info("Collided")
 		c.SendClient(0, 0, 0, 0, true)
 	case *objects.BallScoreEvent:
-		resetGame()
+		scoreGame(ev.Player)
 	}
 }
 
-func resetGame() {
-	panic("Reset")
+func scoreGame(player int) {
+	if player == 1 {
+		p1s.IncrementScore()
+		return
+	}
+
+	p2s.IncrementScore()
 }
 
 func streamReceive() {
