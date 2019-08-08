@@ -42,7 +42,7 @@ func (s *PongServer) ClientStream(stream pb.PongService_ClientStreamServer) erro
 			"ball-y", in.Ball.Y)
 
 		// forward the message to the other server
-		s.apiClient.SendServer(int(in.Bat.X), int(in.Bat.Y), int(in.Ball.X), int(in.Ball.Y), in.Hit) // send data back
+		s.apiClient.SendServer(int(in.Bat.X), int(in.Bat.Y), int(in.Ball.X), int(in.Ball.Y), in.Hit, int(in.Score)) // send data back
 	}
 }
 
