@@ -37,4 +37,9 @@ public interface PongDataOrBuilder extends
    * <code>bool hit = 3;</code>
    */
   boolean getHit();
+
+  /**
+   * <code>int32 score = 4;</code>
+   */
+  int getScore();
 }

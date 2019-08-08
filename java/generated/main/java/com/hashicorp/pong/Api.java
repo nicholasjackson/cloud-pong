@@ -38,14 +38,15 @@ public final class Api {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\tapi.proto\022\004pong\"I\n\010PongData\022\026\n\003bat\030\001 \001" +
+      "\n\tapi.proto\022\004pong\"X\n\010PongData\022\026\n\003bat\030\001 \001" +
       "(\0132\t.pong.Bat\022\030\n\004ball\030\002 \001(\0132\n.pong.Ball\022" +
-      "\013\n\003hit\030\003 \001(\010\"\033\n\003Bat\022\t\n\001x\030\001 \001(\005\022\t\n\001y\030\002 \001(" +
-      "\005\"\034\n\004Ball\022\t\n\001x\030\001 \001(\005\022\t\n\001y\030\002 \001(\0052y\n\013PongS" +
-      "ervice\0224\n\014ClientStream\022\016.pong.PongData\032\016" +
-      ".pong.PongData\"\000(\0010\001\0224\n\014ServerStream\022\016.p" +
-      "ong.PongData\032\016.pong.PongData\"\000(\0010\001B\026\n\022co" +
-      "m.hashicorp.pongP\001b\006proto3"
+      "\013\n\003hit\030\003 \001(\010\022\r\n\005score\030\004 \001(\005\"\033\n\003Bat\022\t\n\001x\030" +
+      "\001 \001(\005\022\t\n\001y\030\002 \001(\005\"\034\n\004Ball\022\t\n\001x\030\001 \001(\005\022\t\n\001y" +
+      "\030\002 \001(\0052y\n\013PongService\0224\n\014ClientStream\022\016." +
+      "pong.PongData\032\016.pong.PongData\"\000(\0010\001\0224\n\014S" +
+      "erverStream\022\016.pong.PongData\032\016.pong.PongD" +
+      "ata\"\000(\0010\001B\026\n\022com.hashicorp.pongP\001b\006proto" +
+      "3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -56,7 +57,7 @@ public final class Api {
     internal_static_pong_PongData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_pong_PongData_descriptor,
-        new java.lang.String[] { "Bat", "Ball", "Hit", });
+        new java.lang.String[] { "Bat", "Ball", "Hit", "Score", });
     internal_static_pong_Bat_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_pong_Bat_fieldAccessorTable = new
