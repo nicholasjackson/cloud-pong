@@ -197,6 +197,7 @@ func (r *Ball) Reset(playerWin int) {
 	r.isInPlay = true
 
 	// reset the speed
+	r.speed = r.initialSpeed
 	r.xVector = r.initialSpeed
 	r.yVector = 0
 	if r.player == 2 {
