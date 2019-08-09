@@ -8,23 +8,27 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 public class ApiServer {
     private final static Logger log = LogManager.getLogger(ApiServer.class.getName());
-    private static int player = Integer.parseInt(getEnvOrDefault("PLAYER", "1"));
-    private static int port = Integer.parseInt(getEnvOrDefault("PORT", "6000"));
-    private static String upstream = getEnvOrDefault("UPSTREAM_ADDRESS", "localhost:6001");
+    private static int player = Integer.parseInt(getEnvOrDefault("PLAYER", "2"));
+    private static int port = Integer.parseInt(getEnvOrDefault("PORT", "6001"));
+    private static String upstream = getEnvOrDefault("UPSTREAM_ADDRESS", "localhost:6000");
 
     public static void main( String[] args ) throws Exception {
-
-        // create a gRPC client to communicate with the other server
-        //
-
         Configurator.setRootLevel(Level.INFO);
+        PongClient client = new PongClient(upstream);
+        PongServiceImpl pongService = new PongServiceImpl();
+        pongService.setOtherGameServerClient(client);
         Server server = ServerBuilder
                 .forPort(port)
-                .addService(new PongServiceImpl()).build();
-        log.info("Listening on port {}, player {}", port, player);
-        server.start();
+                .addService(pongService).build();
 
-        server.awaitTermination();
+
+        try {
+            server.start();
+            log.info("Listening on port {}, player {}", port, player);
+        } finally {
+            server.awaitTermination();
+            client.shutdown();
+        }
 
     }
 
