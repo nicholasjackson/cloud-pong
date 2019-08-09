@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.protobuf:protobuf-gradle-plugin:0.8.10">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-gradle-plugin/0.8.10/96d2d06b5f8b8eda39f03afa434b4f8061926d8c/protobuf-gradle-plugin-0.8.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-gradle-plugin/0.8.10/73225efa210311cc2d51348d15c1063bd0066b5f/protobuf-gradle-plugin-0.8.10-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
