@@ -105,7 +105,7 @@ func ballEventHandler(e interface{}) {
 		c.SendClient(0, 0, 0, 0, true, 0)
 	case *objects.BallScoreEvent:
 		scoreGame(ev.Player)
-		resetGame()
+		resetGame(ev.Player)
 
 		c.SendClient(0, 0, 0, 0, false, ev.Player)
 	}
@@ -120,11 +120,11 @@ func scoreGame(player int) {
 	p2s.IncrementScore()
 }
 
-func resetGame() {
+func resetGame(player int) {
 	// reset the bat and ball position
 	bat1.Reset()
 	bat2.Reset()
-	ball.Reset()
+	ball.Reset(player)
 }
 
 func streamReceive() {
@@ -151,9 +151,10 @@ func streamReceive() {
 			ball.SetControl(false)
 		}
 
+		// if the score has been updated reset the game
 		if d.Score > 0 {
 			scoreGame(d.Score)
-			resetGame()
+			resetGame(d.Score)
 		}
 	}
 }
