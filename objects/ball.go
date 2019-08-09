@@ -151,7 +151,8 @@ func (r *Ball) Collide(p tl.Physical) {
 
 	// only detect a collision if it hits our controlled bat and we are not controlling the ball
 	if bat, ok := p.(*Bat); ok && bat.IsControlled() && !r.IsControlled() {
-		r.speed = r.speed * 1.5
+		// increase the speed with every hit
+		r.speed = r.speed * 2
 
 		r.isControlled = true
 		r.eventHandler(&BallHitEvent{})
@@ -182,7 +183,13 @@ func (r *Ball) IsControlled() bool {
 }
 
 // Reset the original settings of the ball
-func (r *Ball) Reset() {
+func (r *Ball) Reset(playerWin int) {
+	r.isControlled = true
+	// if we won the round hand the serve to the other player
+	if r.player == playerWin {
+		r.isControlled = false
+	}
+
 	r.px = 6
 	r.py = 0
 	r.SetPosition(int(r.px), int(r.py))
