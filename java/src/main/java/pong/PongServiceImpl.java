@@ -22,7 +22,8 @@ public class PongServiceImpl extends PongServiceGrpc.PongServiceImplBase {
     }
 
     StreamObserver<PongData> createStreamObserver(StreamObserver<PongData> responseObserver) {
-        this.clientStreamObserver = new StreamObserver<>() {
+        this.clientStreamObserver = responseObserver;
+        return new StreamObserver<>() {
             @Override
             public void onNext(PongData value) {
                 log.info("got client event BatX: {}, BatY: {}, BallX: {}, BallY: {}",
@@ -30,6 +31,7 @@ public class PongServiceImpl extends PongServiceGrpc.PongServiceImplBase {
                         value.getBat().getY(),
                         value.getBall().getX(),
                         value.getBall().getY());
+
                 otherGameServerClient.send(value);
             }
 
@@ -43,7 +45,6 @@ public class PongServiceImpl extends PongServiceGrpc.PongServiceImplBase {
                 log.debug("completed client stream");
             }
         };
-        return this.clientStreamObserver;
     }
 
     @Override
