@@ -20,12 +20,13 @@ public class PongServiceImpl extends PongServiceGrpc.PongServiceImplBase {
         return this.streamObserver = new StreamObserver<>() {
             @Override
             public void onNext(PongData value) {
-                responseObserver.onNext(value);
                 log.info("got server event BatX: {}, BatY: {}, BallX: {}, BallY: {}",
                         value.getBat().getX(),
                         value.getBat().getY(),
                         value.getBall().getX(),
                         value.getBall().getY());
+
+                // forward the message to the other server
             }
 
             @Override
@@ -45,13 +46,14 @@ public class PongServiceImpl extends PongServiceGrpc.PongServiceImplBase {
         return new StreamObserver<>() {
             @Override
             public void onNext(PongData value) {
-                responseObserver.onNext(value);
-                streamObserver.onNext(value);
                 log.info("got client event BatX: {}, BatY: {}, BallX: {}, BallY: {}",
                         value.getBat().getX(),
                         value.getBat().getY(),
                         value.getBall().getX(),
                         value.getBall().getY());
+
+                // forward the message to the client
+                streamObserver.onNext(value);
             }
 
             @Override
