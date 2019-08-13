@@ -52,13 +52,11 @@ func (s *PongServer) ServerStream(stream pb.PongService_ServerStreamServer) erro
 
 	for {
 		in, err := stream.Recv()
-		s.logger.Error("Error reading stream", "error", err)
 		if err == io.EOF {
 			return nil
 		}
 
 		if err != nil {
-			s.logger.Error("Error reading stream", "error", err)
 			return err
 		}
 

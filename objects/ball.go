@@ -86,15 +86,16 @@ func (r *Ball) Draw(s *tl.Screen) {
 		return
 	}
 
-	// left collision
-	if r.px <= 0 && r.isInPlay {
+	// left collision only detect collisions if we are controlling the ball
+	// the other player will get the message via a server event
+	if r.px <= 0 && r.isInPlay && r.isControlled {
 		// dont move
 		r.isInPlay = false
 		r.eventHandler(&BallScoreEvent{2})
 	}
 
 	// right collision
-	if r.px >= fsx-fbx && r.isInPlay {
+	if r.px >= fsx-fbx && r.isInPlay && r.isControlled {
 		r.isInPlay = false
 		r.eventHandler(&BallScoreEvent{1})
 	}

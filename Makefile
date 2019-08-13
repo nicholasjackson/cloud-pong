@@ -9,3 +9,13 @@ player-1:
 
 player-2:
 	(cd cli && PLAYER=2 API_URI=localhost:6001 go run main.go)
+
+docker-java:
+	cd java && docker build -t nicholasjackson/cloud-pong-api:java .
+	docker push nicholasjackson/cloud-pong-api:java
+
+docker-go:
+	docker build -t nicholasjackson/cloud-pong-api:go -f api/Dockerfile .
+	docker push nicholasjackson/cloud-pong-api:go
+
+docker-all: docker-go docker-java
