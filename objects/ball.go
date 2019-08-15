@@ -36,7 +36,7 @@ type Ball struct {
 
 // NewBall shutup linter
 func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, eventHandler func(e interface{})) *Ball {
-	initialSpeed := 0.6
+	initialSpeed := 0.8
 	xVector := initialSpeed
 	if player == 2 {
 		xVector = -initialSpeed
@@ -153,7 +153,7 @@ func (r *Ball) Collide(p tl.Physical) {
 	// only detect a collision if it hits our controlled bat and we are not controlling the ball
 	if bat, ok := p.(*Bat); ok && bat.IsControlled() && !r.IsControlled() {
 		// increase the speed with every hit
-		r.speed = r.speed * 2
+		// r.speed = r.speed * 2
 
 		r.isControlled = true
 		r.eventHandler(&BallHitEvent{})
