@@ -42,7 +42,10 @@ func (s *PongServer) ClientStream(stream pb.PongService_ClientStreamServer) erro
 			"ball-y", in.Ball.Y)
 
 		// forward the message to the other server
-		s.apiClient.SendServer(int(in.Bat.X), int(in.Bat.Y), int(in.Ball.X), int(in.Ball.Y), in.Hit, int(in.Score)) // send data back
+		err = s.apiClient.SendServer(int(in.Bat.X), int(in.Bat.Y), int(in.Ball.X), int(in.Ball.Y), in.Hit, int(in.Score)) // send data back
+		if err != nil {
+			s.logger.Error("Unable to send data to server", "error", err)
+		}
 	}
 }
 
@@ -68,6 +71,17 @@ func (s *PongServer) ServerStream(stream pb.PongService_ServerStreamServer) erro
 			"ball-y", in.Ball.Y)
 
 		// forward the message to the client
-		s.serverClient.Send(in)
+		if s.serverClient == nil {
+			s.logger.Info("No client connected")
+			continue
+		}
+
+		err = s.serverClient.Send(in)
+		if err != nil {
+			s.logger.Error("Unable to send message to client: %s", err)
+		}
 	}
+
+	s.logger.Info("Disconnected client")
+	return nil
 }
