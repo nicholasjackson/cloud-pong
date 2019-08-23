@@ -44,7 +44,7 @@ type Ball struct {
 
 // NewBall shutup linter
 func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, eventHandler func(e interface{})) *Ball {
-	initialSpeed := 0.8
+	initialSpeed := 2.0
 	xVector := initialSpeed
 	if player == 2 {
 		xVector = -initialSpeed
@@ -72,7 +72,6 @@ func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, event
 func (r *Ball) Draw(s *tl.Screen) {
 	sx, sy := s.Size()
 	_, by := r.Size()
-	fsy := float64(sy)
 	fby := float64(by)
 
 	r.screenX = sx
@@ -81,20 +80,20 @@ func (r *Ball) Draw(s *tl.Screen) {
 	// is this the first draw if so set to center
 	if r.py == 0 && r.isControlled {
 		if r.player == 1 {
-			r.py = (fsy / 2) - (fby / 2)
+			r.py = (gameHeight / 2) - (fby / 2)
 		} else {
-			r.py = (fsy / 2) - (fby / 2)
-			r.px = float64(sx) - 8
+			r.py = (gameHeight / 2) - (fby / 2)
+			r.px = float64(gameWidth) - 8
 		}
 		return
 	}
 
 	if r.py == 0 && !r.isControlled {
 		if r.player == 1 {
-			r.py = (fsy / 2) - (fby / 2)
-			r.px = float64(sx) - 8
+			r.py = (gameHeight / 2) - (fby / 2)
+			r.px = float64(gameWidth) - 8
 		} else {
-			r.py = (fsy / 2) - (fby / 2)
+			r.py = (gameHeight / 2) - (fby / 2)
 		}
 		return
 	}
