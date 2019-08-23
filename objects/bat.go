@@ -22,6 +22,8 @@ type Bat struct {
 	speed        int
 	lastPress    time.Time
 	eventHandler func(e interface{})
+	screenX      int
+	screenY      int
 }
 
 // NewBat comment
@@ -32,8 +34,10 @@ func NewBat(x, y, w, h int, color tl.Attr, offsetRight int, isControlled bool, e
 		py:           y,
 		offsetRight:  offsetRight,
 		isControlled: isControlled,
-		speed:        1,
+		speed:        10,
 		eventHandler: eventHandler,
+		screenX:      0,
+		screenY:      0,
 	}
 }
 
@@ -53,9 +57,12 @@ func (r *Bat) Draw(s *tl.Screen) {
 	sx, sy := s.Size()
 	bx, by := r.Size()
 
+	r.screenX = sx
+	r.screenY = sy
+
 	// is this the first draw if so set to center
 	if r.py == 0 {
-		r.py = (sy / 2) - (by / 2)
+		r.py = (int(gameHeight) / 2) - (by / 2)
 		return
 	}
 
@@ -65,12 +72,12 @@ func (r *Bat) Draw(s *tl.Screen) {
 	}
 
 	// if the bat is greater than the bounds set to the bounds
-	if maxY := (sy - by/2); r.py > maxY {
+	if maxY := (int(gameHeight) - by/2); r.py > maxY {
 		r.py = maxY
 	}
 
 	if r.offsetRight < 0 {
-		r.px = sx - (bx - r.offsetRight)
+		r.px = int(gameWidth) - (bx - r.offsetRight)
 	}
 
 	r.Rectangle.Draw(s)
@@ -86,13 +93,13 @@ func (r *Bat) Tick(ev tl.Event) {
 			r.py -= r.speed
 
 			// increase the bat speed as the arrow is held down
-			r.speed++
+			r.speed += 4
 			r.lastPress = time.Now()
 		case tl.KeyArrowDown:
 			r.py += r.speed
 
 			// increase the bat speed as the arrow is held down
-			r.speed++
+			r.speed += 4
 			r.lastPress = time.Now()
 		}
 
@@ -102,11 +109,21 @@ func (r *Bat) Tick(ev tl.Event) {
 	} else {
 		// reset the bat speed after a timeout
 		if time.Now().Sub(r.lastPress) > 200*time.Millisecond {
-			r.speed = 1
+			r.speed = 4
 		}
 	}
 
-	r.SetPosition(r.px, r.py)
+	// before drawing the ball convert the game space into
+	// the screen space
+	xRatio := float64(r.screenX) / gameWidth
+	yRatio := float64(r.screenY) / gameHeight
+
+	xPos := float64(r.px) * xRatio
+	yPos := float64(r.py) * yRatio
+
+	// set the ball position relative to our own screen size
+	//fmt.Println(r.screenX, r.screenY, xRatio, yRatio, xPos, yPos)
+	r.SetPosition(int(xPos), int(yPos))
 }
 
 // Collide comment

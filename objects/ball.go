@@ -1,7 +1,13 @@
 package objects
 
 import (
+	//	"fmt"
 	tl "github.com/JoelOtter/termloop"
+)
+
+const (
+	gameWidth  float64 = 1024
+	gameHeight float64 = 768
 )
 
 // BallMoveEvent shut up
@@ -32,11 +38,13 @@ type Ball struct {
 	yVector      float64
 	speed        float64
 	initialSpeed float64
+	screenX      int
+	screenY      int
 }
 
 // NewBall shutup linter
 func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, eventHandler func(e interface{})) *Ball {
-	initialSpeed := 0.8
+	initialSpeed := 2.0
 	xVector := initialSpeed
 	if player == 2 {
 		xVector = -initialSpeed
@@ -55,33 +63,37 @@ func NewBall(x, y, w, h int, color tl.Attr, isControlled bool, player int, event
 		yVector:      0,
 		speed:        initialSpeed,
 		initialSpeed: initialSpeed,
+		screenX:      0,
+		screenY:      0,
 	}
 }
 
 // Draw get stuffed linter
 func (r *Ball) Draw(s *tl.Screen) {
 	sx, sy := s.Size()
-	bx, by := r.Size()
-	fsx, fsy := float64(sx), float64(sy)
-	fbx, fby := float64(bx), float64(by)
+	_, by := r.Size()
+	fby := float64(by)
+
+	r.screenX = sx
+	r.screenY = sy
 
 	// is this the first draw if so set to center
 	if r.py == 0 && r.isControlled {
 		if r.player == 1 {
-			r.py = (fsy / 2) - (fby / 2)
+			r.py = (gameHeight / 2) - (fby / 2)
 		} else {
-			r.py = (fsy / 2) - (fby / 2)
-			r.px = float64(sx) - 8
+			r.py = (gameHeight / 2) - (fby / 2)
+			r.px = float64(gameWidth) - 8
 		}
 		return
 	}
 
 	if r.py == 0 && !r.isControlled {
 		if r.player == 1 {
-			r.py = (fsy / 2) - (fby / 2)
-			r.px = float64(sx) - 8
+			r.py = (gameHeight / 2) - (fby / 2)
+			r.px = float64(gameWidth) - 8
 		} else {
-			r.py = (fsy / 2) - (fby / 2)
+			r.py = (gameHeight / 2) - (fby / 2)
 		}
 		return
 	}
@@ -95,13 +107,13 @@ func (r *Ball) Draw(s *tl.Screen) {
 	}
 
 	// right collision
-	if r.px >= fsx-fbx && r.isInPlay && r.isControlled {
+	if r.px >= gameWidth && r.isInPlay && r.isControlled {
 		r.isInPlay = false
 		r.eventHandler(&BallScoreEvent{1})
 	}
 
 	// if the ball goes out of bounds vertically flip the y direction
-	if (r.py < 0 || r.py >= fsy) && r.isInPlay {
+	if (r.py < 0 || r.py >= gameHeight) && r.isInPlay {
 		r.yVector = -r.yVector
 	}
 
@@ -130,7 +142,17 @@ func (r *Ball) Tick(ev tl.Event) {
 		r.eventHandler(&BallMoveEvent{int(r.px), int(r.py)})
 	}
 
-	r.SetPosition(int(r.px), int(r.py))
+	// before drawing the ball convert the game space into
+	// the screen space
+	xRatio := float64(r.screenX) / gameWidth
+	yRatio := float64(r.screenY) / gameHeight
+
+	xPos := r.px * xRatio
+	yPos := r.py * yRatio
+
+	// set the ball position relative to our own screen size
+	//fmt.Println(r.screenX, r.screenY, xRatio, yRatio, xPos, yPos)
+	r.SetPosition(int(xPos), int(yPos))
 }
 
 // GetPos shut up
@@ -153,7 +175,7 @@ func (r *Ball) Collide(p tl.Physical) {
 	// only detect a collision if it hits our controlled bat and we are not controlling the ball
 	if bat, ok := p.(*Bat); ok && bat.IsControlled() && !r.IsControlled() {
 		// increase the speed with every hit
-		// r.speed = r.speed * 2
+		//r.speed = r.speed * 2
 
 		r.isControlled = true
 		r.eventHandler(&BallHitEvent{})

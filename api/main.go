@@ -23,8 +23,9 @@ func main() {
 	env.Parse()
 
 	logger = hclog.Default()
-	apiClient := client.New(*upstream)
-	apiClient.DialAsync()
+
+	apiClient := client.New(*upstream, logger)
+	apiClient.DialAsync(true)
 
 	grpcServer := grpc.NewServer()
 	server := server.New(logger, apiClient)

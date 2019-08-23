@@ -38,8 +38,8 @@ func main() {
 
 	logger.Info("Starting client", "player", *player, "uri", *apiURI)
 
-	c = client.New(*apiURI)
-	c.Dial()
+	c = client.New(*apiURI, logger)
+	c.Dial(false)
 
 	// setup monitoring for inbound events
 	go streamReceive()
@@ -157,4 +157,13 @@ func streamReceive() {
 			resetGame(d.Score)
 		}
 	}
+
+	logger.Error("Server disconnected, restarting")
+	err := c.Dial(false)
+	if err != nil {
+		panic(err)
+	}
+
+	logger.Error("Server reconnected")
+	streamReceive()
 }
