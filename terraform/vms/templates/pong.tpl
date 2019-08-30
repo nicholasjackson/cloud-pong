@@ -91,7 +91,7 @@ Description=Consul Envoy
 After=syslog.target network.target
 
 [Service]
-ExecStart=consul connect envoy -sidecar-for pong-vms
+ExecStart=/usr/local/bin/consul connect envoy -sidecar-for pong-vms
 ExecStop=/bin/sleep 5
 
 [Install]
