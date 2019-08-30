@@ -10,10 +10,13 @@ start-server-2:
 	(cd api && PLAYER=2 BIND_PORT=6001 UPSTREAM_ADDRESS=localhost:6000 go run main.go)
 	
 player-1:
-	(cd cli && PLAYER=1 API_URI=localhost:6000 go run main.go)
+	(cd cli && PLAYER=1 API_URI=40.121.35.42:6000 go run main.go)
 
 player-2:
-	(cd cli && PLAYER=2 API_URI=localhost:6001 go run main.go)
+	(cd cli && PLAYER=2 API_URI=35.187.62.62:6000 go run main.go)
+
+pong-api-linux:
+	CGO_ENABLED=0 GOOS=linux go build -o ./bin/pong-api ./api/main.go
 
 docker-java:
 	cd java && docker build -t nicholasjackson/cloud-pong-api:java-${version} .

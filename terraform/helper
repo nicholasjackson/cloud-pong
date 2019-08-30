@@ -1,0 +1,67 @@
+#!/bin/bash
+UNAME=$(uname)
+
+# set specific commands for Linux and MacOS
+if [[ "$UNAME" == "Linux" ]]; then
+  OPEN=xdg-open
+  CLIP="| xclip -selection cls"
+else
+  OPEN=open
+  CLIP="| pbcopy"
+fi
+
+function get_k8s_config {
+  terraform output k8s_config > kube_config.yml
+  export KUBECONFIG=$(pwd)/kube_config.yml
+}
+
+function get_private_key {
+  terraform output vms_private_key > server.pem
+  chmod 600 ./server.pem
+}
+
+function ssh_consul_server {
+  ssh -o StrictHostKeyChecking=no -i ./server.pem ubuntu@$(terraform output vms_consul_server_addr)
+}
+
+function ssh_consul_gateway {
+  ssh -o StrictHostKeyChecking=no -i ./server.pem ubuntu@$(terraform output vms_consul_gateway_addr)
+}
+
+function ssh_pong {
+  ssh -o StrictHostKeyChecking=no -i ./server.pem ubuntu@$(terraform output vms_pong_addr)
+}
+
+case "$1" in
+  k8s_config)
+    echo Fetching Kubernetes configuration
+    get_k8s_config
+    ;;
+  vm_private_key)
+    echo Fetching Private Key
+    get_private_key
+    ;;
+  ssh_vm_consul_server)
+    echo Opening SSH session to Consul Server
+    get_private_key
+    ssh_consul_server
+    ;;
+  ssh_vm_consul_gateway)
+    echo Opening SSH session to Consul Gateway
+    get_private_key
+    ssh_consul_gateway
+    ;;
+  ssh_vm_pong)
+    echo Opening SSH session to Pong Server
+    get_private_key
+    ssh_pong
+    ;;
+  *)
+    echo "Usage:"
+    echo "k8s_config            - Fetch Kubernetes config from the remote state"
+    echo "vm_private_key        - Fetch SSH Private key for VMS from the remote state"
+    echo "ssh_vm_consul_server  - Create an SSH session to the consul server"
+    echo "ssh_vm_consul_gateway - Create an SSH session to the consul gateway"
+    echo "ssh_vm_pong           - Create an SSH session to the consul gateway"
+    exit 1
+esac
