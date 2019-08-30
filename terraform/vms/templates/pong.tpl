@@ -77,6 +77,7 @@ After=syslog.target network.target
 [Service]
 ExecStart=/usr/local/bin/consul agent -config-file=/etc/consul/config.hcl -config-dir=/etc/consul/config
 ExecStop=/bin/sleep 5
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -93,6 +94,7 @@ After=syslog.target network.target
 [Service]
 ExecStart=/usr/local/bin/consul connect envoy -sidecar-for pong-vms
 ExecStop=/bin/sleep 5
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -110,6 +112,7 @@ After=syslog.target network.target
 Environment=PLAYER=2
 ExecStart=/usr/local/bin/pong-api
 ExecStop=/bin/sleep 5
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

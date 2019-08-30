@@ -49,6 +49,7 @@ After=syslog.target network.target
 [Service]
 ExecStart=/usr/local/bin/consul agent -config-file=/etc/consul/config.hcl
 ExecStop=/bin/sleep 5
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

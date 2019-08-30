@@ -8,6 +8,10 @@ wget https://releases.hashicorp.com/consul/1.6.0/consul_1.6.0_linux_amd64.zip -O
 unzip ./consul.zip
 mv ./consul /usr/local/bin
 
+# Fetch Envoy
+wget https://github.com/nicholasjackson/cloud-pong/releases/download/v0.1.1/envoy -O /usr/local/bin/envoy
+chmod +x /usr/local/bin/envoy
+
 # Create the consul config
 mkdir -p /etc/consul
 cat << EOF > /etc/consul/config.hcl
@@ -42,6 +46,7 @@ After=syslog.target network.target
 [Service]
 ExecStart=/usr/local/bin/consul agent -config-file=/etc/consul/config.hcl
 ExecStop=/bin/sleep 5
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -58,6 +63,7 @@ After=syslog.target network.target
 [Service]
 ExecStart=/usr/local/bin/consul connect envoy -mesh-gateway -register -address ${advertise_addr}:443 -wan-address ${gateway_addr}:443 -- -l debug
 ExecStop=/bin/sleep 5
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
