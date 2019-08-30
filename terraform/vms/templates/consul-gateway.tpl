@@ -61,7 +61,7 @@ Description=Consul Gateway
 After=syslog.target network.target
 
 [Service]
-ExecStart=/usr/local/bin/consul connect envoy -mesh-gateway -register -address ${advertise_addr}:443 -wan-address ${gateway_addr}:443 -- -l debug
+ExecStart=/usr/local/bin/consul connect envoy -mesh-gateway -register -wan-address ${gateway_addr}:443 -- -l debug
 ExecStop=/bin/sleep 5
 Restart=always
 
