@@ -11,7 +11,9 @@ const (
 	gameHeight      float64 = 768
 	tickInterval            = 50 * time.Millisecond
 	initialSpeed            = 5
+	maxSpeed                = 20
 	speedMultiplier         = 1.2
+	batSpeed                = 10
 )
 
 type Object struct {
@@ -77,6 +79,24 @@ func (r *Game) ResetGame() {
 	}
 }
 
+func (r *Game) MoveBatUp(player int) {
+	if player == 1 {
+		r.bat1.py -= batSpeed
+		return
+	}
+
+	r.bat2.py -= batSpeed
+}
+
+func (r *Game) MoveBatDown(player int) {
+	if player == 1 {
+		r.bat1.py += batSpeed
+		return
+	}
+
+	r.bat2.py += batSpeed
+}
+
 func (r *Game) Tick() <-chan struct{} {
 	r.cancelTick = make(chan struct{})
 	tick := make(chan struct{})
@@ -100,10 +120,6 @@ func (r *Game) Tick() <-chan struct{} {
 
 func (r *Game) tick() {
 
-	if r.started == true {
-		r.moveBall()
-	}
-
 	//fmt.Println(r.ball.py, r.bat2.py)
 
 	// check to see if the ball would hit a bat and flip x speed
@@ -113,8 +129,12 @@ func (r *Game) tick() {
 		// do we hit the bat?
 		if r.ball.py+r.ball.h >= r.bat2.py && r.ball.py <= r.bat2.py+r.bat2.h {
 			//hit
-			r.speedX = r.speedX * speedMultiplier
+			if r.speedX < maxSpeed {
+				r.speedX = r.speedX * speedMultiplier
+			}
+
 			r.speedX = -r.speedX
+			r.ball.px = r.bat2.px - r.ball.w // set the position to the bat
 		} else {
 			r.player1Score++
 			r.ResetGame()
@@ -125,12 +145,19 @@ func (r *Game) tick() {
 		r.controllingPlayer = 1
 
 		if r.ball.py+r.ball.h >= r.bat1.py && r.ball.py <= r.bat1.py+r.bat1.h {
-			r.speedX = r.speedX * speedMultiplier
+			if r.speedX > -maxSpeed {
+				r.speedX = r.speedX * speedMultiplier
+			}
 			r.speedX = -r.speedX
+			r.ball.px = r.bat1.px + r.bat1.w // set the position to the bat
 		} else {
 			r.player2Score++
 			r.ResetGame()
 		}
+	}
+
+	if r.started == true {
+		r.moveBall()
 	}
 }
 

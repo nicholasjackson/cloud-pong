@@ -80,7 +80,7 @@ func TestGameBallChangesDirectionAndSpeedWhenHittingPlayer2Bat(t *testing.T) {
 	g.tick()
 
 	// ball position should be moving in the opposite direction
-	assert.Equal(t, 1008.0, g.ball.px)
+	assert.Equal(t, 997.0, g.ball.px)
 }
 
 func TestGameScoreWhenMissingPlayer2Bat(t *testing.T) {
@@ -116,4 +116,40 @@ func TestGameScoreWhenMissingPlayer1Bat(t *testing.T) {
 	assert.Equal(t, 1, g.player2Score)
 	// ball should be reset
 	assert.Equal(t, 6.0, g.ball.px)
+}
+
+func TestGameBat1MovesUpToCorrectPossition(t *testing.T) {
+	g := setup()
+
+	g.ResetGame()
+	g.MoveBatUp(1)
+
+	assert.Equal(t, 371.0, g.bat1.py)
+}
+
+func TestGameBat2MovesUpToCorrectPossition(t *testing.T) {
+	g := setup()
+
+	g.ResetGame()
+	g.MoveBatUp(2)
+
+	assert.Equal(t, 371.0, g.bat2.py)
+}
+
+func TestGameBat1MovesDownToCorrectPossition(t *testing.T) {
+	g := setup()
+
+	g.ResetGame()
+	g.MoveBatDown(1)
+
+	assert.Equal(t, 391.0, g.bat1.py)
+}
+
+func TestGameBat2MovesDownToCorrectPossition(t *testing.T) {
+	g := setup()
+
+	g.ResetGame()
+	g.MoveBatDown(2)
+
+	assert.Equal(t, 391.0, g.bat2.py)
 }

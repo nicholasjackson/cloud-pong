@@ -28,6 +28,10 @@ func (b *Bat) Tick(ev tl.Event) {
 			b.handler("RESET_GAME")
 		case tl.KeySpace:
 			b.handler("SERVE")
+		case tl.KeyArrowUp:
+			b.handler("BAT_UP")
+		case tl.KeyArrowDown:
+			b.handler("BAT_DOWN")
 		}
 	}
 }

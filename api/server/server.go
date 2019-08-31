@@ -51,6 +51,14 @@ func (s *PongServer) ClientStream(stream pb.PongService_ClientStreamServer) erro
 			go s.gameTick(g, stream)
 		}
 
+		if in.Name == "BAT_UP" {
+			g.MoveBatUp(1)
+		}
+
+		if in.Name == "BAT_DOWN" {
+			g.MoveBatDown(1)
+		}
+
 		stream.Send(g.DataAsProto())
 
 		/*
