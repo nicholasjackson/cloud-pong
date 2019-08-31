@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"time"
 
 	pb "github.com/nicholasjackson/pong/api/protos/pong"
@@ -30,13 +29,17 @@ type Game struct {
 	speedX            float64
 	speedY            float64
 	controllingPlayer int
+	player1Score      int
+	player2Score      int
+	cancelTick        chan struct{}
 }
 
 func NewGame() *Game {
 	return &Game{
-		ball: &Object{0, 0, 15, 20},
-		bat1: &Object{0, 0, 15, 90},
-		bat2: &Object{0, 0, 15, 90},
+		ball:              &Object{0, 0, 15, 20},
+		bat1:              &Object{0, 0, 15, 90},
+		bat2:              &Object{0, 0, 15, 90},
+		controllingPlayer: 1,
 	}
 }
 
@@ -68,10 +71,14 @@ func (r *Game) ResetGame() {
 	r.started = false
 	r.speedX = initialSpeed
 	r.speedY = 0
-	r.controllingPlayer = 1
+
+	if r.cancelTick != nil {
+		r.cancelTick <- struct{}{}
+	}
 }
 
 func (r *Game) Tick() <-chan struct{} {
+	r.cancelTick = make(chan struct{})
 	tick := make(chan struct{})
 	ticker := time.NewTicker(tickInterval)
 
@@ -81,6 +88,9 @@ func (r *Game) Tick() <-chan struct{} {
 			case <-ticker.C:
 				r.tick()
 				tick <- struct{}{}
+			case <-r.cancelTick:
+				ticker.Stop()
+				return
 			}
 		}
 	}()
@@ -94,19 +104,33 @@ func (r *Game) tick() {
 		r.moveBall()
 	}
 
-	fmt.Println(r.ball.px)
+	//fmt.Println(r.ball.py, r.bat2.py)
 
 	// check to see if the ball would hit a bat and flip x speed
 	if r.ball.px+r.ball.w >= r.bat2.px && r.controllingPlayer == 1 {
-		r.speedX = r.speedX * speedMultiplier
-		r.speedX = -r.speedX
 		r.controllingPlayer = 2
+
+		// do we hit the bat?
+		if r.ball.py+r.ball.h >= r.bat2.py && r.ball.py <= r.bat2.py+r.bat2.h {
+			//hit
+			r.speedX = r.speedX * speedMultiplier
+			r.speedX = -r.speedX
+		} else {
+			r.player1Score++
+			r.ResetGame()
+		}
 	}
 
 	if r.ball.px <= r.bat1.px && r.controllingPlayer == 2 {
-		r.speedX = r.speedX * speedMultiplier
-		r.speedX = -r.speedX
 		r.controllingPlayer = 1
+
+		if r.ball.py+r.ball.h >= r.bat1.py && r.ball.py <= r.bat1.py+r.bat1.h {
+			r.speedX = r.speedX * speedMultiplier
+			r.speedX = -r.speedX
+		} else {
+			r.player2Score++
+			r.ResetGame()
+		}
 	}
 }
 

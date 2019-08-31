@@ -8,9 +8,10 @@ import (
 
 func setup() *Game {
 	return &Game{
-		ball: &Object{0, 0, 3, 3},
-		bat1: &Object{0, 0, 3, 6},
-		bat2: &Object{0, 0, 3, 6},
+		ball:              &Object{0, 0, 3, 3},
+		bat1:              &Object{0, 0, 3, 6},
+		bat2:              &Object{0, 0, 3, 6},
+		controllingPlayer: 1,
 	}
 }
 
@@ -82,19 +83,37 @@ func TestGameBallChangesDirectionAndSpeedWhenHittingPlayer2Bat(t *testing.T) {
 	assert.Equal(t, 1008.0, g.ball.px)
 }
 
-func TestGameBallChangesDirectionWhenHittingPlayer1Bat(t *testing.T) {
+func TestGameScoreWhenMissingPlayer2Bat(t *testing.T) {
 	g := setup()
 
 	g.ResetGame()
 	g.StartGame()
 
-	g.ball.px = 6 // move the ball to be incontact with the bat
-	g.controllingPlayer = 2
-	g.speedX = -initialSpeed
-	g.tick()
-	g.tick()
+	g.ball.px = 1017 // move the ball to be incontact with the bat
+	g.bat2.py = 34
+	g.controllingPlayer = 1
 	g.tick()
 
 	// ball position should be moving in the opposite direction
-	assert.Equal(t, 13.0, g.ball.px)
+	assert.Equal(t, 1, g.player1Score)
+	// ball should be reset
+	assert.Equal(t, 6.0, g.ball.px)
+}
+
+func TestGameScoreWhenMissingPlayer1Bat(t *testing.T) {
+	g := setup()
+
+	g.ResetGame()
+	g.StartGame()
+
+	g.ball.px = 3 // move the ball to be incontact with the bat
+	g.bat1.py = 34
+	g.controllingPlayer = 2
+	g.speedX = -initialSpeed
+	g.tick()
+
+	// ball position should be moving in the opposite direction
+	assert.Equal(t, 1, g.player2Score)
+	// ball should be reset
+	assert.Equal(t, 6.0, g.ball.px)
 }
