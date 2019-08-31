@@ -1,153 +1,52 @@
 package objects
 
 import (
-	"time"
-
+	//	"fmt"
 	tl "github.com/JoelOtter/termloop"
 )
 
-// BatMoveEvent is fired when the bat moves
-type BatMoveEvent struct {
-	X int
-	Y int
-}
-
-// Bat defines a bat in the game
+// Ball shutup linter
 type Bat struct {
 	*tl.Rectangle
-	px           int
-	py           int
-	offsetRight  int
-	isControlled bool
-	speed        int
-	lastPress    time.Time
-	eventHandler func(e interface{})
-	screenX      int
-	screenY      int
+	screenW int
+	screenH int
+	handler func(string)
 }
 
-// NewBat comment
-func NewBat(x, y, w, h int, color tl.Attr, offsetRight int, isControlled bool, eventHandler func(e interface{})) *Bat {
+// NewBall shutup linter
+func NewBat(x, y, w, h int, color tl.Attr, handler func(string)) *Bat {
 	return &Bat{
-		Rectangle:    tl.NewRectangle(x, y, w, h, color),
-		px:           x,
-		py:           y,
-		offsetRight:  offsetRight,
-		isControlled: isControlled,
-		speed:        10,
-		eventHandler: eventHandler,
-		screenX:      0,
-		screenY:      0,
+		Rectangle: tl.NewRectangle(x, y, w, h, color),
+		handler:   handler,
 	}
 }
 
-// SetPos sets the position of the bat
-func (r *Bat) SetPos(x, y int) {
-	r.px = x
-	r.py = y
-}
-
-// GetPos returns the x and y position for the bat
-func (r *Bat) GetPos() (int, int) {
-	return r.px, r.py
-}
-
-// Draw something
-func (r *Bat) Draw(s *tl.Screen) {
-	sx, sy := s.Size()
-	bx, by := r.Size()
-
-	r.screenX = sx
-	r.screenY = sy
-
-	// is this the first draw if so set to center
-	if r.py == 0 {
-		r.py = (int(gameHeight) / 2) - (by / 2)
-		return
-	}
-
-	// if the bat y is less than the bounds set to the bounds
-	if minY := (0 - by/2); r.py < minY {
-		r.py = minY
-	}
-
-	// if the bat is greater than the bounds set to the bounds
-	if maxY := (int(gameHeight) - by/2); r.py > maxY {
-		r.py = maxY
-	}
-
-	if r.offsetRight < 0 {
-		r.px = int(gameWidth) - (bx - r.offsetRight)
-	}
-
-	r.Rectangle.Draw(s)
-}
-
-// Tick comment
-func (r *Bat) Tick(ev tl.Event) {
-
-	// Enable arrow key movement
-	if ev.Type == tl.EventKey && r.isControlled {
+func (b *Bat) Tick(ev tl.Event) {
+	if ev.Type == tl.EventKey && b.handler != nil {
 		switch ev.Key {
-		case tl.KeyArrowUp:
-			r.py -= r.speed
-
-			// increase the bat speed as the arrow is held down
-			r.speed += 4
-			r.lastPress = time.Now()
-		case tl.KeyArrowDown:
-			r.py += r.speed
-
-			// increase the bat speed as the arrow is held down
-			r.speed += 4
-			r.lastPress = time.Now()
-		}
-
-		if r.isControlled {
-			r.eventHandler(&BatMoveEvent{r.px, r.py})
-		}
-	} else {
-		// reset the bat speed after a timeout
-		if time.Now().Sub(r.lastPress) > 200*time.Millisecond {
-			r.speed = 4
+		case tl.KeyCtrlR:
+			b.handler("RESET_GAME")
+		case tl.KeySpace:
+			b.handler("SERVE")
 		}
 	}
-
-	// before drawing the ball convert the game space into
-	// the screen space
-	xRatio := float64(r.screenX) / gameWidth
-	yRatio := float64(r.screenY) / gameHeight
-
-	xPos := float64(r.px) * xRatio
-	yPos := float64(r.py) * yRatio
-
-	// set the ball position relative to our own screen size
-	//fmt.Println(r.screenX, r.screenY, xRatio, yRatio, xPos, yPos)
-	r.SetPosition(int(xPos), int(yPos))
 }
 
-// Collide comment
-func (r *Bat) Collide(p tl.Physical) {
-	// Check if it's a CollRec we're colliding with
-	/*
-		if _, ok := p.(*CollBat); ok && r.move {
-			r.SetColor(tl.ColorBlue)
-			r.SetPosition(r.px, r.py)
-		}
-	*/
+func (b *Bat) Draw(s *tl.Screen) {
+	b.screenW, b.screenH = s.Size()
+	b.Rectangle.Draw(s)
 }
 
-// IsControlled is this bat user controlled?
-func (r *Bat) IsControlled() bool {
-	return r.isControlled
-}
+func (b *Bat) SetData(bx, by, bw, bh, gw, gh int32) {
+	// before setting translate coordinates to screen size
+	//panic(b.translateToGameX(bw, gw))
+	b.SetSize(
+		translateToGameX(bw, gw, b.screenW),
+		translateToGameY(bh, gh, b.screenH),
+	)
 
-func (r *Bat) handleEvent(e interface{}) {
-	r.eventHandler(e)
-}
-
-// Reset the original settings of the bat
-func (r *Bat) Reset() {
-	r.py = 0
-	r.SetPosition(r.px, r.py)
+	b.SetPosition(
+		translateToGameX(bx, gw, b.screenW),
+		translateToGameY(by, gh, b.screenH),
+	)
 }

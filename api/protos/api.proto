@@ -5,23 +5,39 @@ option java_package = "com.hashicorp.pong";
 option java_multiple_files = true;
 
 service PongService {
-  rpc ClientStream (stream PongData) returns (stream PongData) {}
+  rpc ClientStream (stream Event) returns (stream PongData) {}
   rpc ServerStream (stream PongData) returns (stream PongData) {}
 }
 
+message Event {
+  string name = 1;
+  int32 x = 2;
+  int32 y = 3;
+}
+
 message PongData {
-  Bat bat = 1;
-  Ball ball = 2;
-  bool hit = 3;
-  int32 score = 4;
+  Bat bat1 = 1;
+  Bat bat2 = 2;
+  Ball ball = 3;
+  Game game = 4;
+  int32 score = 5;
+}
+
+message Game {
+  int32 w = 1;
+  int32 h = 2;
 }
 
 message Bat {
   int32 x = 1;
   int32 y = 2;
+  int32 w = 3;
+  int32 h = 4;
 }
 
 message Ball {
   int32 x = 1;
   int32 y = 2;
+  int32 w = 3;
+  int32 h = 4;
 }

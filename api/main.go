@@ -7,7 +7,6 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/nicholasjackson/env"
-	"github.com/nicholasjackson/pong/api/client"
 	pb "github.com/nicholasjackson/pong/api/protos/pong"
 	"github.com/nicholasjackson/pong/api/server"
 	"google.golang.org/grpc"
@@ -24,11 +23,13 @@ func main() {
 
 	logger = hclog.Default()
 
-	apiClient := client.New(*upstream, logger)
-	apiClient.DialAsync(true)
+	/*
+		apiClient := client.New(*upstream, logger)
+		apiClient.DialAsync(true)
+	*/
 
 	grpcServer := grpc.NewServer()
-	server := server.New(logger, apiClient)
+	server := server.New(logger)
 	pb.RegisterPongServiceServer(grpcServer, server)
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))

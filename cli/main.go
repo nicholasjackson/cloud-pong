@@ -1,18 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 
 	tl "github.com/JoelOtter/termloop"
 	"github.com/hashicorp/go-hclog"
 	"github.com/nicholasjackson/env"
-	"github.com/nicholasjackson/pong/api/client"
+	pb "github.com/nicholasjackson/pong/api/protos/pong"
 	"github.com/nicholasjackson/pong/objects"
+	"google.golang.org/grpc"
 )
-
-var c *client.Client
 
 var player = env.Int("PLAYER", false, 1, "Player number")
 var apiURI = env.String("API_URI", false, "localhost:6000", "URI for the api server")
@@ -26,6 +27,8 @@ var p2s *objects.Score
 
 var logger hclog.Logger
 
+var client pb.PongService_ClientStreamClient
+
 func main() {
 	env.Parse()
 
@@ -38,21 +41,12 @@ func main() {
 
 	logger.Info("Starting client", "player", *player, "uri", *apiURI)
 
-	c = client.New(*apiURI, logger)
-	c.Dial(false)
-
 	// setup monitoring for inbound events
 	go streamReceive()
 
-	if *player == 1 {
-		bat1 = objects.NewBat(3, 0, 3, 6, tl.ColorRed, 0, true, batEventHandler)
-		bat2 = objects.NewBat(3, 0, 3, 6, tl.ColorGreen, -3, false, nil)
-		ball = objects.NewBall(6, 0, 3, 2, tl.ColorBlack, true, *player, ballEventHandler)
-	} else {
-		bat1 = objects.NewBat(3, 0, 3, 6, tl.ColorRed, 0, false, nil)
-		bat2 = objects.NewBat(3, 0, 3, 6, tl.ColorGreen, -3, true, batEventHandler)
-		ball = objects.NewBall(6, 0, 3, 2, tl.ColorBlack, false, *player, ballEventHandler)
-	}
+	bat1 = objects.NewBat(0, 0, 0, 0, tl.ColorRed, handler)
+	bat2 = objects.NewBat(0, 0, 0, 0, tl.ColorGreen, nil)
+	ball = objects.NewBall(0, 0, 0, 0, tl.ColorGreen)
 
 	// create the net
 	net := objects.NewNet(tl.ColorBlack)
@@ -87,6 +81,40 @@ func main() {
 	g.Start()
 }
 
+func streamReceive() {
+	conn, err := grpc.Dial(*apiURI, grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close()
+	c := pb.NewPongServiceClient(conn)
+
+	client, err = c.ClientStream(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
+	for {
+		d, err := client.Recv()
+		if err == io.EOF {
+			panic("Stream closed")
+		}
+		if err != nil {
+			panic(err)
+		}
+
+		// draw the objects
+		bat1.SetData(d.Bat1.X, d.Bat1.Y, d.Bat1.W, d.Bat1.H, d.Game.W, d.Game.H)
+		bat2.SetData(d.Bat2.X, d.Bat2.Y, d.Bat2.W, d.Bat2.H, d.Game.W, d.Game.H)
+		ball.SetData(d.Ball.X, d.Ball.Y, d.Ball.W, d.Ball.H, d.Game.W, d.Game.H)
+	}
+}
+
+func handler(message string) {
+	client.Send(&pb.Event{Name: message})
+}
+
+/*
 func batEventHandler(e interface{}) {
 	logger.Info("Send bat pos to server")
 	batPos := e.(*objects.BatMoveEvent)
@@ -167,3 +195,4 @@ func streamReceive() {
 	logger.Error("Server reconnected")
 	streamReceive()
 }
+*/

@@ -24,11 +24,67 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type Event struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	X                    int32    `protobuf:"varint,2,opt,name=x,proto3" json:"x,omitempty"`
+	Y                    int32    `protobuf:"varint,3,opt,name=y,proto3" json:"y,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Event) Reset()         { *m = Event{} }
+func (m *Event) String() string { return proto.CompactTextString(m) }
+func (*Event) ProtoMessage()    {}
+func (*Event) Descriptor() ([]byte, []int) {
+	return fileDescriptor_00212fb1f9d3bf1c, []int{0}
+}
+
+func (m *Event) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Event.Unmarshal(m, b)
+}
+func (m *Event) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Event.Marshal(b, m, deterministic)
+}
+func (m *Event) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Event.Merge(m, src)
+}
+func (m *Event) XXX_Size() int {
+	return xxx_messageInfo_Event.Size(m)
+}
+func (m *Event) XXX_DiscardUnknown() {
+	xxx_messageInfo_Event.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Event proto.InternalMessageInfo
+
+func (m *Event) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Event) GetX() int32 {
+	if m != nil {
+		return m.X
+	}
+	return 0
+}
+
+func (m *Event) GetY() int32 {
+	if m != nil {
+		return m.Y
+	}
+	return 0
+}
+
 type PongData struct {
-	Bat                  *Bat     `protobuf:"bytes,1,opt,name=bat,proto3" json:"bat,omitempty"`
-	Ball                 *Ball    `protobuf:"bytes,2,opt,name=ball,proto3" json:"ball,omitempty"`
-	Hit                  bool     `protobuf:"varint,3,opt,name=hit,proto3" json:"hit,omitempty"`
-	Score                int32    `protobuf:"varint,4,opt,name=score,proto3" json:"score,omitempty"`
+	Bat1                 *Bat     `protobuf:"bytes,1,opt,name=bat1,proto3" json:"bat1,omitempty"`
+	Bat2                 *Bat     `protobuf:"bytes,2,opt,name=bat2,proto3" json:"bat2,omitempty"`
+	Ball                 *Ball    `protobuf:"bytes,3,opt,name=ball,proto3" json:"ball,omitempty"`
+	Game                 *Game    `protobuf:"bytes,4,opt,name=game,proto3" json:"game,omitempty"`
+	Score                int32    `protobuf:"varint,5,opt,name=score,proto3" json:"score,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -38,7 +94,7 @@ func (m *PongData) Reset()         { *m = PongData{} }
 func (m *PongData) String() string { return proto.CompactTextString(m) }
 func (*PongData) ProtoMessage()    {}
 func (*PongData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{0}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{1}
 }
 
 func (m *PongData) XXX_Unmarshal(b []byte) error {
@@ -59,9 +115,16 @@ func (m *PongData) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PongData proto.InternalMessageInfo
 
-func (m *PongData) GetBat() *Bat {
+func (m *PongData) GetBat1() *Bat {
 	if m != nil {
-		return m.Bat
+		return m.Bat1
+	}
+	return nil
+}
+
+func (m *PongData) GetBat2() *Bat {
+	if m != nil {
+		return m.Bat2
 	}
 	return nil
 }
@@ -73,11 +136,11 @@ func (m *PongData) GetBall() *Ball {
 	return nil
 }
 
-func (m *PongData) GetHit() bool {
+func (m *PongData) GetGame() *Game {
 	if m != nil {
-		return m.Hit
+		return m.Game
 	}
-	return false
+	return nil
 }
 
 func (m *PongData) GetScore() int32 {
@@ -87,9 +150,58 @@ func (m *PongData) GetScore() int32 {
 	return 0
 }
 
+type Game struct {
+	W                    int32    `protobuf:"varint,1,opt,name=w,proto3" json:"w,omitempty"`
+	H                    int32    `protobuf:"varint,2,opt,name=h,proto3" json:"h,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Game) Reset()         { *m = Game{} }
+func (m *Game) String() string { return proto.CompactTextString(m) }
+func (*Game) ProtoMessage()    {}
+func (*Game) Descriptor() ([]byte, []int) {
+	return fileDescriptor_00212fb1f9d3bf1c, []int{2}
+}
+
+func (m *Game) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Game.Unmarshal(m, b)
+}
+func (m *Game) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Game.Marshal(b, m, deterministic)
+}
+func (m *Game) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Game.Merge(m, src)
+}
+func (m *Game) XXX_Size() int {
+	return xxx_messageInfo_Game.Size(m)
+}
+func (m *Game) XXX_DiscardUnknown() {
+	xxx_messageInfo_Game.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Game proto.InternalMessageInfo
+
+func (m *Game) GetW() int32 {
+	if m != nil {
+		return m.W
+	}
+	return 0
+}
+
+func (m *Game) GetH() int32 {
+	if m != nil {
+		return m.H
+	}
+	return 0
+}
+
 type Bat struct {
 	X                    int32    `protobuf:"varint,1,opt,name=x,proto3" json:"x,omitempty"`
 	Y                    int32    `protobuf:"varint,2,opt,name=y,proto3" json:"y,omitempty"`
+	W                    int32    `protobuf:"varint,3,opt,name=w,proto3" json:"w,omitempty"`
+	H                    int32    `protobuf:"varint,4,opt,name=h,proto3" json:"h,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -99,7 +211,7 @@ func (m *Bat) Reset()         { *m = Bat{} }
 func (m *Bat) String() string { return proto.CompactTextString(m) }
 func (*Bat) ProtoMessage()    {}
 func (*Bat) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{1}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{3}
 }
 
 func (m *Bat) XXX_Unmarshal(b []byte) error {
@@ -134,9 +246,25 @@ func (m *Bat) GetY() int32 {
 	return 0
 }
 
+func (m *Bat) GetW() int32 {
+	if m != nil {
+		return m.W
+	}
+	return 0
+}
+
+func (m *Bat) GetH() int32 {
+	if m != nil {
+		return m.H
+	}
+	return 0
+}
+
 type Ball struct {
 	X                    int32    `protobuf:"varint,1,opt,name=x,proto3" json:"x,omitempty"`
 	Y                    int32    `protobuf:"varint,2,opt,name=y,proto3" json:"y,omitempty"`
+	W                    int32    `protobuf:"varint,3,opt,name=w,proto3" json:"w,omitempty"`
+	H                    int32    `protobuf:"varint,4,opt,name=h,proto3" json:"h,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -146,7 +274,7 @@ func (m *Ball) Reset()         { *m = Ball{} }
 func (m *Ball) String() string { return proto.CompactTextString(m) }
 func (*Ball) ProtoMessage()    {}
 func (*Ball) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{2}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{4}
 }
 
 func (m *Ball) XXX_Unmarshal(b []byte) error {
@@ -181,8 +309,24 @@ func (m *Ball) GetY() int32 {
 	return 0
 }
 
+func (m *Ball) GetW() int32 {
+	if m != nil {
+		return m.W
+	}
+	return 0
+}
+
+func (m *Ball) GetH() int32 {
+	if m != nil {
+		return m.H
+	}
+	return 0
+}
+
 func init() {
+	proto.RegisterType((*Event)(nil), "pong.Event")
 	proto.RegisterType((*PongData)(nil), "pong.PongData")
+	proto.RegisterType((*Game)(nil), "pong.Game")
 	proto.RegisterType((*Bat)(nil), "pong.Bat")
 	proto.RegisterType((*Ball)(nil), "pong.Ball")
 }
@@ -190,21 +334,26 @@ func init() {
 func init() { proto.RegisterFile("api.proto", fileDescriptor_00212fb1f9d3bf1c) }
 
 var fileDescriptor_00212fb1f9d3bf1c = []byte{
-	// 220 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x50, 0xc1, 0x4a, 0x03, 0x31,
-	0x10, 0x75, 0xdc, 0x5d, 0x69, 0xa7, 0x45, 0x64, 0xf0, 0xb0, 0x28, 0xc8, 0x9a, 0x53, 0x4e, 0x8b,
-	0x54, 0xbf, 0xa0, 0xfa, 0x01, 0x92, 0x7e, 0xc1, 0x6c, 0x09, 0x35, 0x10, 0x37, 0x4b, 0x1c, 0xa4,
-	0xfb, 0xf7, 0x32, 0x29, 0xbd, 0x78, 0x10, 0xbc, 0xe5, 0xbd, 0x97, 0xf7, 0xe6, 0xcd, 0xe0, 0x92,
-	0xa7, 0xd0, 0x4f, 0x39, 0x49, 0xa2, 0x7a, 0x4a, 0xe3, 0xc1, 0x24, 0x5c, 0xbc, 0xa7, 0xf1, 0xf0,
-	0xc6, 0xc2, 0x74, 0x8f, 0xd5, 0xc0, 0xd2, 0x42, 0x07, 0x76, 0xb5, 0x59, 0xf6, 0xaa, 0xf7, 0x5b,
-	0x16, 0xa7, 0x2c, 0x3d, 0x60, 0x3d, 0x70, 0x8c, 0xed, 0x65, 0x51, 0xf1, 0xac, 0xc6, 0xe8, 0x0a,
-	0x4f, 0x37, 0x58, 0x7d, 0x04, 0x69, 0xab, 0x0e, 0xec, 0xc2, 0xe9, 0x93, 0x6e, 0xb1, 0xf9, 0xda,
-	0xa7, 0xec, 0xdb, 0xba, 0x03, 0xdb, 0xb8, 0x13, 0x30, 0x8f, 0x58, 0x6d, 0x59, 0x68, 0x8d, 0x70,
-	0x2c, 0x93, 0x1a, 0x07, 0x47, 0x45, 0x73, 0x49, 0x6e, 0x1c, 0xcc, 0xc6, 0x60, 0xad, 0xc1, 0x7f,
-	0xfd, 0xd9, 0xcc, 0xb8, 0xd2, 0xde, 0x3b, 0x9f, 0xbf, 0xc3, 0xde, 0xd3, 0x0b, 0xae, 0x5f, 0x63,
-	0xf0, 0xa3, 0xec, 0x24, 0x7b, 0xfe, 0xa4, 0xeb, 0x53, 0xbf, 0xf3, 0x6a, 0x77, 0xbf, 0xb0, 0xb9,
-	0xb0, 0xf0, 0x04, 0xea, 0xd2, 0x00, 0x9f, 0xff, 0xe3, 0x1a, 0xae, 0xca, 0xfd, 0x9e, 0x7f, 0x02,
-	0x00, 0x00, 0xff, 0xff, 0xe4, 0x33, 0xdc, 0x94, 0x4c, 0x01, 0x00, 0x00,
+	// 304 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xc1, 0x4a, 0xc3, 0x40,
+	0x10, 0x86, 0x5d, 0xbb, 0x11, 0x3b, 0x29, 0x1e, 0x16, 0x91, 0x20, 0x28, 0x65, 0x4f, 0x39, 0x05,
+	0x1b, 0x05, 0x4f, 0x7a, 0x88, 0x4a, 0xaf, 0x65, 0xfb, 0x04, 0xdb, 0xb0, 0x24, 0x81, 0x24, 0x1b,
+	0xb6, 0x4b, 0xda, 0xbc, 0x8c, 0xcf, 0x2a, 0x3b, 0x9b, 0x80, 0x55, 0x4f, 0xde, 0xf2, 0xcf, 0x3f,
+	0xdf, 0x30, 0xff, 0x64, 0x61, 0x2e, 0xbb, 0x2a, 0xe9, 0x8c, 0xb6, 0x9a, 0xd1, 0x4e, 0xb7, 0x05,
+	0x7f, 0x86, 0xe0, 0xa3, 0x57, 0xad, 0x65, 0x0c, 0x68, 0x2b, 0x1b, 0x15, 0x91, 0x25, 0x89, 0xe7,
+	0x02, 0xbf, 0xd9, 0x02, 0xc8, 0x31, 0x3a, 0x5f, 0x92, 0x38, 0x10, 0xe4, 0xe8, 0xd4, 0x10, 0xcd,
+	0xbc, 0x1a, 0xf8, 0x27, 0x81, 0xcb, 0x8d, 0x6e, 0x8b, 0x77, 0x69, 0x25, 0xbb, 0x03, 0xba, 0x93,
+	0x76, 0x85, 0x70, 0x98, 0xce, 0x13, 0x37, 0x3a, 0xc9, 0xa4, 0x15, 0x58, 0x1e, 0xed, 0x14, 0x47,
+	0xfd, 0xb2, 0x53, 0x76, 0xef, 0xec, 0xba, 0xc6, 0xd9, 0x61, 0x0a, 0x93, 0x5d, 0xd7, 0x02, 0xeb,
+	0xce, 0x2f, 0xdc, 0x6a, 0xf4, 0xbb, 0xbf, 0x96, 0x8d, 0x12, 0x58, 0x67, 0xd7, 0x10, 0xec, 0x73,
+	0x6d, 0x54, 0x14, 0xe0, 0x72, 0x5e, 0x70, 0x0e, 0x74, 0x3d, 0x86, 0x38, 0xe0, 0x62, 0x81, 0x20,
+	0x07, 0xa7, 0xca, 0x29, 0x52, 0xc9, 0x5f, 0x60, 0x96, 0x49, 0xeb, 0x73, 0x92, 0x93, 0x9c, 0x63,
+	0xcb, 0xe0, 0xf1, 0xd9, 0x09, 0x4e, 0x27, 0xfc, 0x15, 0xa8, 0x5b, 0xf3, 0xbf, 0x7c, 0xda, 0x43,
+	0xe8, 0x4e, 0xb8, 0x55, 0xa6, 0xaf, 0x72, 0xc5, 0x56, 0xb0, 0x78, 0xab, 0x2b, 0xd5, 0xda, 0xad,
+	0x35, 0x4a, 0x36, 0x2c, 0xf4, 0x49, 0xf1, 0xff, 0xdc, 0x5e, 0x79, 0x31, 0x9d, 0x9c, 0x9f, 0xc5,
+	0xe4, 0x81, 0xb0, 0x27, 0x58, 0x38, 0x5a, 0x99, 0x11, 0xf9, 0xd1, 0xf5, 0x37, 0x95, 0xdd, 0x00,
+	0xcb, 0x75, 0x93, 0x94, 0x72, 0x5f, 0x56, 0xb9, 0x36, 0x1d, 0x36, 0x6d, 0xc8, 0xee, 0x02, 0x5f,
+	0xc6, 0xe3, 0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x08, 0xfb, 0x9d, 0x26, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -241,7 +390,7 @@ func (c *pongServiceClient) ClientStream(ctx context.Context, opts ...grpc.CallO
 }
 
 type PongService_ClientStreamClient interface {
-	Send(*PongData) error
+	Send(*Event) error
 	Recv() (*PongData, error)
 	grpc.ClientStream
 }
@@ -250,7 +399,7 @@ type pongServiceClientStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *pongServiceClientStreamClient) Send(m *PongData) error {
+func (x *pongServiceClientStreamClient) Send(m *Event) error {
 	return x.ClientStream.SendMsg(m)
 }
 
@@ -320,7 +469,7 @@ func _PongService_ClientStream_Handler(srv interface{}, stream grpc.ServerStream
 
 type PongService_ClientStreamServer interface {
 	Send(*PongData) error
-	Recv() (*PongData, error)
+	Recv() (*Event, error)
 	grpc.ServerStream
 }
 
@@ -332,8 +481,8 @@ func (x *pongServiceClientStreamServer) Send(m *PongData) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *pongServiceClientStreamServer) Recv() (*PongData, error) {
-	m := new(PongData)
+func (x *pongServiceClientStreamServer) Recv() (*Event, error) {
+	m := new(Event)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
