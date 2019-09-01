@@ -6,7 +6,7 @@ option java_multiple_files = true;
 
 service PongService {
   rpc ClientStream (stream Event) returns (stream PongData) {}
-  rpc ServerStream (stream PongData) returns (stream PongData) {}
+  rpc ServerStream (stream Event) returns (stream PongData) {}
 }
 
 message Event {

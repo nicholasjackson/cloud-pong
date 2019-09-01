@@ -29,7 +29,7 @@ func main() {
 	*/
 
 	grpcServer := grpc.NewServer()
-	server := server.New(logger)
+	server := server.New(logger, *player, *upstream)
 	pb.RegisterPongServiceServer(grpcServer, server)
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))

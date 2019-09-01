@@ -1,7 +1,9 @@
 package game
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -80,7 +82,7 @@ func TestGameBallChangesDirectionAndSpeedWhenHittingPlayer2Bat(t *testing.T) {
 	g.tick()
 
 	// ball position should be moving in the opposite direction
-	assert.Equal(t, 997.0, g.ball.px)
+	assert.True(t, g.ball.px < 1015)
 }
 
 func TestGameScoreWhenMissingPlayer2Bat(t *testing.T) {
@@ -152,4 +154,27 @@ func TestGameBat2MovesDownToCorrectPossition(t *testing.T) {
 	g.MoveBatDown(2)
 
 	assert.Equal(t, 391.0, g.bat2.py)
+}
+
+func TestGameTickerCanBeCancelledWhenReset(t *testing.T) {
+	g := setup()
+	done := make(chan struct{})
+
+	g.ResetGame()
+	go func() {
+		for _ = range g.Tick() {
+			fmt.Println("tick")
+		}
+		done <- struct{}{} // signal the ticker has been cancelled
+	}()
+
+	time.Sleep(100 * time.Millisecond)
+	g.ResetGame() // resetting game cancels ticker
+
+	select {
+	case <-done:
+		return
+	case <-time.After(10 * time.Second):
+		t.Fatal("timeout waiting for ticker to cancel")
+	}
 }

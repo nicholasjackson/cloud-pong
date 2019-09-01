@@ -98,6 +98,7 @@ func (r *Game) MoveBatDown(player int) {
 }
 
 func (r *Game) Tick() <-chan struct{} {
+
 	r.cancelTick = make(chan struct{})
 	tick := make(chan struct{})
 	ticker := time.NewTicker(tickInterval)
@@ -110,6 +111,7 @@ func (r *Game) Tick() <-chan struct{} {
 				tick <- struct{}{}
 			case <-r.cancelTick:
 				ticker.Stop()
+				close(tick)
 				return
 			}
 		}

@@ -94,6 +94,9 @@ func streamReceive() {
 		panic(err)
 	}
 
+	// as soon as connected send a reset game command
+	client.Send(&pb.Event{Name: "RESET_GAME"})
+
 	for {
 		d, err := client.Recv()
 		if err == io.EOF {
