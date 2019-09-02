@@ -5,6 +5,11 @@ Terminal based Cloud Pong
 
 The game requires two servers which are connected together and two clients connect to each of the servers.  To start a basic setup you can use the Makefile provided in the repo.
 
+## Controls
+* Up / Down - Move bat up and down
+* Space - Serve
+* Ctrl+R - Reset game (player 1 only)
+
 ### Run player 1 API
 
 ```
