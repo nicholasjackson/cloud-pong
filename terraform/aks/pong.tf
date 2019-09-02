@@ -21,7 +21,7 @@ resource "kubernetes_deployment" "pong" {
       metadata {
         labels = {
           app     = "pong-api"
-          version = "v0.1.10"
+          version = "v0.2.0"
         }
 
         annotations = {
@@ -33,7 +33,7 @@ resource "kubernetes_deployment" "pong" {
 
       spec {
         container {
-          image = "nicholasjackson/cloud-pong-api:go-v0.1.1"
+          image = "nicholasjackson/cloud-pong-api:go-v0.2.0"
           name  = "pong-aks"
 
           port {

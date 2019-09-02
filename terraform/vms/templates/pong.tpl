@@ -5,7 +5,7 @@ apt-get update && apt-get install -y unzip
 cd /tmp
 
 # Fetch Pong
-wget https://github.com/nicholasjackson/cloud-pong/releases/download/v0.1.1/pong-api -O /usr/local/bin/pong-api
+wget https://github.com/nicholasjackson/cloud-pong/releases/download/v0.2.0/pong-api -O /usr/local/bin/pong-api
 chmod +x /usr/local/bin/pong-api
 
 # Fetch Envoy
