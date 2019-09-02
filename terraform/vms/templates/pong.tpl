@@ -9,7 +9,7 @@ wget https://github.com/nicholasjackson/cloud-pong/releases/download/v0.2.0/pong
 chmod +x /usr/local/bin/pong-api
 
 # Fetch Envoy
-wget https://github.com/nicholasjackson/cloud-pong/releases/download/v0.1.1/envoy -O /usr/local/bin/envoy
+wget https://github.com/nicholasjackson/cloud-pong/releases/download/v0.2.0/envoy -O /usr/local/bin/envoy
 chmod +x /usr/local/bin/envoy
 
 # Fetch Consul

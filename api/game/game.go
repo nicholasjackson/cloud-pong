@@ -98,10 +98,10 @@ func (r *Game) ResetGame() {
 	r.started = false
 
 	r.speedY = 0
-	r.speedX = initialSpeed
+	r.speedX = -initialSpeed
 
 	if r.controllingPlayer == 2 {
-		r.speedX = -initialSpeed
+		r.speedX = initialSpeed
 	}
 
 	r.bat1Speed = batSpeed
