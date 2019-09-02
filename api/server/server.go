@@ -107,11 +107,11 @@ func (s *PongServer) ClientStream(stream pb.PongService_ClientStreamServer) erro
 
 func (s *PongServer) handlePlayer1(m string) {
 	if m == "RESET_GAME" {
-		s.g.ResetGame()
+		s.g.HardReset()
 	}
 
 	if m == "SERVE" {
-		s.g.StartGame()
+		s.g.StartGame(1)
 		go s.gameTick()
 	}
 
@@ -123,16 +123,7 @@ func (s *PongServer) handlePlayer1(m string) {
 		s.g.MoveBatDown(1)
 	}
 
-	data := s.g.DataAsProto()
-
-	// send data to the other player
-	if s.upstreamServer != nil {
-		s.upstreamServer.Send(data)
-	} else {
-	}
-
-	// send data back to the client
-	s.playerClient.Send(data)
+	s.sendUpdate()
 }
 
 func (s *PongServer) handlePlayer2(m string) {
@@ -141,16 +132,31 @@ func (s *PongServer) handlePlayer2(m string) {
 }
 
 func (s *PongServer) gameTick() {
-	for _ = range s.g.Tick() {
-		dp := s.g.DataAsProto()
-		s.logger.Info("Send Data", "ball-x", dp.Ball.X, "ball-y", dp.Ball.Y)
+	t, c := s.g.Tick()
 
-		if s.upstreamServer == nil {
-			s.logger.Info("Upstream server not connected")
-		} else {
-			s.upstreamServer.Send(dp)
+	for {
+		select {
+		case <-t:
+			s.sendUpdate()
+		case <-c:
+			s.sendUpdate()
+			s.logger.Info("Game reset")
+			return
 		}
+	}
+}
 
+func (s *PongServer) sendUpdate() {
+	dp := s.g.DataAsProto()
+	s.logger.Info("Send Data", "data", dp)
+
+	if s.upstreamServer == nil {
+		s.logger.Info("Upstream server not connected")
+	} else {
+		s.upstreamServer.Send(dp)
+	}
+
+	if s.playerClient != nil {
 		s.playerClient.Send(dp)
 	}
 }
@@ -163,11 +169,13 @@ func (s *PongServer) ServerStream(stream pb.PongService_ServerStreamServer) erro
 	for {
 		in, err := stream.Recv()
 		if err == io.EOF {
-			return nil
+			s.logger.Error("Close received from player", "error", err)
+			break
 		}
 
 		if err != nil {
-			return err
+			s.logger.Error("Close received from player", "error", err)
+			break
 		}
 
 		s.logger.Info(
@@ -175,6 +183,29 @@ func (s *PongServer) ServerStream(stream pb.PongService_ServerStreamServer) erro
 			"bat-x", in.X,
 			"bat-y", in.Y,
 		)
+
+		if in.Name == "BAT_UP" {
+			s.g.MoveBatUp(2)
+		}
+
+		if in.Name == "BAT_DOWN" {
+			s.g.MoveBatDown(2)
+		}
+
+		if in.Name == "SERVE" {
+			s.g.StartGame(2)
+			go s.gameTick()
+		}
+
+		dp := s.g.DataAsProto()
+		if s.playerClient == nil {
+			s.logger.Info("Player 1 client not connected")
+		} else {
+			s.playerClient.Send(dp)
+		}
+
+		// send the position back
+		stream.Send(dp)
 
 		/*
 			// forward the message to the client

@@ -162,10 +162,16 @@ func TestGameTickerCanBeCancelledWhenReset(t *testing.T) {
 
 	g.ResetGame()
 	go func() {
-		for _ = range g.Tick() {
-			fmt.Println("tick")
+		t, c := g.Tick()
+		for {
+			select {
+			case <-t:
+				fmt.Println("tick")
+			case <-c:
+				done <- struct{}{} // signal the ticker has been cancelled
+				return
+			}
 		}
-		done <- struct{}{} // signal the ticker has been cancelled
 	}()
 
 	time.Sleep(100 * time.Millisecond)
@@ -174,7 +180,7 @@ func TestGameTickerCanBeCancelledWhenReset(t *testing.T) {
 	select {
 	case <-done:
 		return
-	case <-time.After(10 * time.Second):
+	case <-time.After(1 * time.Second):
 		t.Fatal("timeout waiting for ticker to cancel")
 	}
 }

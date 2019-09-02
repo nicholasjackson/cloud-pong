@@ -44,9 +44,16 @@ func main() {
 	// setup monitoring for inbound events
 	go streamReceive()
 
-	bat1 = objects.NewBat(0, 0, 0, 0, tl.ColorRed, handler)
-	bat2 = objects.NewBat(0, 0, 0, 0, tl.ColorGreen, nil)
-	ball = objects.NewBall(0, 0, 0, 0, tl.ColorGreen)
+	if *player == 1 {
+		bat1 = objects.NewBat(0, 0, 0, 0, tl.ColorRed, handler)
+		bat2 = objects.NewBat(0, 0, 0, 0, tl.ColorGreen, nil)
+	}
+	if *player == 2 {
+		bat1 = objects.NewBat(0, 0, 0, 0, tl.ColorRed, nil)
+		bat2 = objects.NewBat(0, 0, 0, 0, tl.ColorGreen, handler)
+	}
+
+	ball = objects.NewBall(0, 0, 0, 0, tl.ColorBlack)
 
 	// create the net
 	net := objects.NewNet(tl.ColorBlack)
@@ -95,25 +102,30 @@ func streamReceive() {
 	}
 
 	// as soon as connected send a reset game command
-	client.Send(&pb.Event{Name: "RESET_GAME"})
+	if *player == 1 {
+		client.Send(&pb.Event{Name: "RESET_GAME"})
+	}
 
 	for {
 		d, err := client.Recv()
 		if err == io.EOF {
-			panic("Stream closed")
+			log.Fatal("Stream closed by server")
 		}
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 
 		// draw the objects
 		bat1.SetData(d.Bat1.X, d.Bat1.Y, d.Bat1.W, d.Bat1.H, d.Game.W, d.Game.H)
 		bat2.SetData(d.Bat2.X, d.Bat2.Y, d.Bat2.W, d.Bat2.H, d.Game.W, d.Game.H)
 		ball.SetData(d.Ball.X, d.Ball.Y, d.Ball.W, d.Ball.H, d.Game.W, d.Game.H)
+		p1s.UpdateScore(d.Player1Score)
+		p2s.UpdateScore(d.Player2Score)
 	}
 }
 
 func handler(message string) {
+	logger.Info("sending", "message", message)
 	client.Send(&pb.Event{Name: message})
 }
 

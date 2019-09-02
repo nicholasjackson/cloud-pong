@@ -20,7 +20,8 @@ message PongData {
   Bat bat2 = 2;
   Ball ball = 3;
   Game game = 4;
-  int32 score = 5;
+  int32 player1Score = 5;
+  int32 player2Score = 6;
 }
 
 message Game {
