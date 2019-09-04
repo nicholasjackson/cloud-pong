@@ -59,3 +59,13 @@ chmod 644 /etc/systemd/system/consul.service
 
 systemctl daemon-reload
 systemctl start consul.service
+
+## Wait for consul to start and then register a default
+## deny all intention
+
+until consul members; do
+  echo "Waiting for Consul to start"
+  sleep 1
+done
+
+consul intention create -deny '*' '*'
