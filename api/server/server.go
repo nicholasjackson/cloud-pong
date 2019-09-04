@@ -106,21 +106,23 @@ func (s *PongServer) ClientStream(stream pb.PongService_ClientStreamServer) erro
 }
 
 func (s *PongServer) handlePlayer1(m string) {
-	if m == "RESET_GAME" {
+	switch m {
+	case "RESET_GAME":
 		s.g.HardReset()
-	}
-
-	if m == "SERVE" {
+	case "SERVE_1":
 		s.g.StartGame(1)
 		go s.gameTick()
-	}
-
-	if m == "BAT_UP" {
+	case "SERVE_2":
+		s.g.StartGame(2)
+		go s.gameTick()
+	case "BAT_UP_1":
 		s.g.MoveBatUp(1)
-	}
-
-	if m == "BAT_DOWN" {
+	case "BAT_DOWN_1":
 		s.g.MoveBatDown(1)
+	case "BAT_UP_2":
+		s.g.MoveBatUp(2)
+	case "BAT_DOWN_2":
+		s.g.MoveBatDown(2)
 	}
 
 	s.sendUpdate()
@@ -184,17 +186,14 @@ func (s *PongServer) ServerStream(stream pb.PongService_ServerStreamServer) erro
 			"bat-y", in.Y,
 		)
 
-		if in.Name == "BAT_UP" {
-			s.g.MoveBatUp(2)
-		}
-
-		if in.Name == "BAT_DOWN" {
-			s.g.MoveBatDown(2)
-		}
-
-		if in.Name == "SERVE" {
+		switch in.Name {
+		case "SERVE_2":
 			s.g.StartGame(2)
 			go s.gameTick()
+		case "BAT_UP_2":
+			s.g.MoveBatUp(2)
+		case "BAT_DOWN_2":
+			s.g.MoveBatDown(2)
 		}
 
 		dp := s.g.DataAsProto()

@@ -23,15 +23,32 @@ func NewBat(x, y, w, h int, color tl.Attr, handler func(string)) *Bat {
 
 func (b *Bat) Tick(ev tl.Event) {
 	if ev.Type == tl.EventKey && b.handler != nil {
+		switch ev.Ch {
+		case 119: // W
+			b.handler("BAT_UP_1")
+			return
+		case 115: // S
+			b.handler("BAT_DOWN_1")
+			return
+		case 101: // E
+			b.handler("SERVE_1")
+			return
+		case 111: // O
+			b.handler("BAT_UP_2")
+			return
+		case 108: // L
+			b.handler("BAT_DOWN_2")
+			return
+		case 112: // P
+			b.handler("SERVE_2")
+			return
+		}
+
 		switch ev.Key {
 		case tl.KeyCtrlR:
 			b.handler("RESET_GAME")
 		case tl.KeySpace:
 			b.handler("SERVE")
-		case tl.KeyArrowUp:
-			b.handler("BAT_UP")
-		case tl.KeyArrowDown:
-			b.handler("BAT_DOWN")
 		}
 	}
 }
