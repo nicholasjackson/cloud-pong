@@ -22,9 +22,9 @@ export TF_VAR_client_id="${ARM_CLIENT_ID}"
 export TF_VAR_client_secret="${ARM_CLIENT_SECRET}"
 ```
 
-## Creating infratructure
+## Creating infrastructure
 
-You can then run `terraform apply` to create the infrastrucure
+You can then run `terraform apply` to create the infrastructure
 
 ## Output variables
 
@@ -76,6 +76,12 @@ $ open "http://$(terraform output vms_consul_server_addr):8500/ui/aks/intentions
 ```
 
 ![](../images/intentions.png)
+
+## Run the game
+
+The game can be run by following [these](../README.md#run-player-1-api) directions and replacing localhost for both player 1 and player 2 with the pong-lb external LB IP from the Kubernetes clusters and the vms_pong_addr from `terraform output` respectively.
+
+Game controls can be found [here](../README.md#controls).
 
 ## Helper
 
