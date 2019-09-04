@@ -46,6 +46,37 @@ MIIJKQIBAAKCAgEA2qokNUFCSDCgf5DdUTSRE20UF/VzNtNE9J2N1QUrZFcjGXj4
 #...
 ```
 
+## SMI Controller
+
+This configuration will automatically deploy the Consul SMI controller however in order to interact with it the custom CRDs and the policy must be applied with `kubectl`.
+
+First apply the CRDS:
+
+```
+$ kubectl apply -f crds.yml
+customresourcedefinition.apiextensions.k8s.io/traffictargets.access.smi-spec.io created
+customresourcedefinition.apiextensions.k8s.io/httproutegroups.specs.smi-spec.io created
+customresourcedefinition.apiextensions.k8s.io/tcproutes.specs.smi-spec.io created
+```
+
+Then you can apply the Traffic Targets to allow traffic between the two Pong Servers:
+
+```
+$ kubectl apply -f policy.yml
+tcproute.specs.smi-spec.io/pong-aks created
+traffictarget.access.smi-spec.io/pong-aks-targets created
+tcproute.specs.smi-spec.io/pong-vms created
+traffictarget.access.smi-spec.io/pong-vms-targets created
+```
+
+You can check that these have been applied by looking at the Consul UI:
+
+```
+$ open "http://$(terraform output vms_consul_server_addr):8500/ui/aks/intentions"
+```
+
+![](../images/intentions.png)
+
 ## Helper
 
 There is a simple helper script which can be used to automate some of the tasks such as retrieving the K8s config or

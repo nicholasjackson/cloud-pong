@@ -1,0 +1,48 @@
+---
+apiVersion: specs.smi-spec.io/v1alpha1
+kind: TCPRoute
+metadata:
+  name: pong-aks
+
+---
+kind: TrafficTarget
+apiVersion: access.smi-spec.io/v1alpha1
+metadata:
+  name: pong-aks-targets
+  namespace: default
+destination:
+  kind: ServiceAccount
+  name: pong-aks
+  namespace: default
+sources:
+- kind: ServiceAccount
+  name: pong-vms
+  namespace: default
+specs:
+- kind: TCPRoute
+  name: pong-aks
+
+
+---
+apiVersion: specs.smi-spec.io/v1alpha1
+kind: TCPRoute
+metadata:
+  name: pong-vms
+
+---
+kind: TrafficTarget
+apiVersion: access.smi-spec.io/v1alpha1
+metadata:
+  name: pong-vms-targets
+  namespace: default
+destination:
+  kind: ServiceAccount
+  name: pong-vms
+  namespace: default
+sources:
+- kind: ServiceAccount
+  name: pong-aks
+  namespace: default
+specs:
+- kind: TCPRoute
+  name: pong-vms
