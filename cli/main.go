@@ -17,6 +17,7 @@ import (
 
 var player = env.Int("PLAYER", false, 1, "Player number")
 var apiURI = env.String("API_URI", false, "localhost:6000", "URI for the api server")
+var singleKeyboard = env.Bool("SINGLE_KEYBOARD", false, false, "Control both bats from a single terminal")
 
 var bat1 *objects.Bat
 var bat2 *objects.Bat
@@ -45,12 +46,12 @@ func main() {
 	go streamReceive()
 
 	if *player == 1 {
-		bat1 = objects.NewBat(0, 0, 0, 0, tl.ColorRed, handler)
-		bat2 = objects.NewBat(0, 0, 0, 0, tl.ColorGreen, nil)
+		bat1 = objects.NewBat(0, 0, 0, 0, tl.ColorRed, 1, *singleKeyboard, handler)
+		bat2 = objects.NewBat(0, 0, 0, 0, tl.ColorGreen, 2, false, nil)
 	}
 	if *player == 2 {
-		bat1 = objects.NewBat(0, 0, 0, 0, tl.ColorRed, nil)
-		bat2 = objects.NewBat(0, 0, 0, 0, tl.ColorGreen, handler)
+		bat1 = objects.NewBat(0, 0, 0, 0, tl.ColorRed, 1, false, nil)
+		bat2 = objects.NewBat(0, 0, 0, 0, tl.ColorGreen, 2, false, handler)
 	}
 
 	ball = objects.NewBall(0, 0, 0, 0, tl.ColorBlack)

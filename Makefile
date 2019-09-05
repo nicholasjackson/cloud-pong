@@ -12,6 +12,9 @@ start-server-2:
 player-1:
 	(cd cli && PLAYER=1 API_URI=localhost:6000 go run main.go)
 
+player-1-single:
+	(cd cli && PLAYER=1 API_URI=localhost:6000 SINGLE_KEYBOARD=true go run main.go)
+
 player-1-tf:
 	(cd cli && PLAYER=1 API_URI=$(shell cd terraform && terraform output aks_pong_addr):6000 go run main.go)
 
