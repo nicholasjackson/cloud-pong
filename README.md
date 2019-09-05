@@ -21,13 +21,13 @@ By default the game is in Normal mode. To set single keyboard mode you must set 
 * Down Arrow - Bat down
 * Space - Serve
 
-### Player 1
+### Player 1 - Single Keyboard Mode
 * W - Bat up
 * S - Bat down
 * E - Serve
 * Ctrl+R - Reset game
 
-### Player 2
+### Player 2 - Single Keyboard Mode
 * O - Bat up
 * L - Bat down
 * P - Serve
