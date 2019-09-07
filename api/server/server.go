@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"io"
+	"time"
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/nicholasjackson/pong/api/game"
@@ -36,38 +37,8 @@ func (s *PongServer) ClientStream(stream pb.PongService_ClientStreamServer) erro
 		s.g = game.NewGame() // start a new game
 	}
 
-	// open a connection to the other API
-	conn, err := grpc.Dial(s.serverURI, grpc.WithInsecure())
-	if err != nil {
-		return err
-	}
-
-	defer conn.Close()
-	c := pb.NewPongServiceClient(conn)
-	s.upstreamClient, err = c.ServerStream(context.Background())
-	if err != nil {
-		s.logger.Error("Unable to connect to upstream server")
-		return err
-	}
-
 	// handle messages from the upstream server
-	go func() {
-		for {
-			d, err := s.upstreamClient.Recv()
-			if err == io.EOF {
-				s.logger.Error("Upstream disconnected", "error", err)
-				break
-			}
-			if err != nil {
-				s.logger.Error("Upstream disconnected", "error", err)
-				break
-			}
-
-			// got message forward it
-			s.logger.Info("Received from Server", "Message", d)
-			stream.Send(d)
-		}
-	}()
+	go s.handleUpstreamMessages()
 
 	// handle messages from the pong client
 	for {
@@ -103,6 +74,64 @@ func (s *PongServer) ClientStream(stream pb.PongService_ClientStreamServer) erro
 	}
 
 	return nil
+}
+
+func (s *PongServer) connectToUpstream() error {
+	conn, err := grpc.Dial(s.serverURI, grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+
+	//defer conn.Close()
+	c := pb.NewPongServiceClient(conn)
+	s.upstreamClient, err = c.ServerStream(context.Background())
+	if err != nil {
+		s.logger.Error("Unable to connect to upstream server")
+		return err
+	}
+
+	return nil
+}
+
+func (s *PongServer) handleUpstreamMessages() {
+	go func() {
+		// ensure we keep the connection open
+		for {
+
+			// open a connection to the other API
+			err := s.connectToUpstream()
+			if err != nil {
+				s.logger.Error("Unable to connect to upstream", "error", err)
+			}
+
+			for {
+				if s.upstreamClient == nil {
+					s.logger.Error("No available upstream client")
+					break
+				}
+
+				d, err := s.upstreamClient.Recv()
+				if err == io.EOF {
+					s.logger.Error("Upstream disconnected", "error", err)
+					break
+				}
+				if err != nil {
+					s.logger.Error("Upstream disconnected", "error", err)
+					break
+				}
+
+				// got message forward it to the client
+				s.logger.Info("Received from Server", "Message", d)
+				s.playerClient.Send(d)
+			}
+
+			// if we are here then the server has disconnected
+			// retry the connection
+
+			// back off before reconnecting
+			time.Sleep(500 * time.Millisecond)
+		}
+	}()
 }
 
 func (s *PongServer) handlePlayer1(m string) {
@@ -205,19 +234,6 @@ func (s *PongServer) ServerStream(stream pb.PongService_ServerStreamServer) erro
 
 		// send the position back
 		stream.Send(dp)
-
-		/*
-			// forward the message to the client
-			if s.serverClient == nil {
-				s.logger.Info("No client connected")
-				continue
-			}
-
-			err = s.serverClient.Send(in)
-			if err != nil {
-				s.logger.Error("Unable to send message to client: %s", err)
-			}
-		*/
 	}
 
 	s.logger.Info("Disconnected client")

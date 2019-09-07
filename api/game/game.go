@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"time"
 
 	pb "github.com/nicholasjackson/pong/api/protos/pong"
@@ -51,7 +50,6 @@ func NewGame() *Game {
 }
 
 func (r *Game) DataAsProto() *pb.PongData {
-	fmt.Println("Score1", r.player1Score, "Score2", r.player2Score)
 	return &pb.PongData{
 		Bat1:         &pb.Bat{X: int32(r.bat1.px), Y: int32(r.bat1.py), W: int32(r.bat1.w), H: int32(r.bat1.h)},
 		Bat2:         &pb.Bat{X: int32(r.bat2.px), Y: int32(r.bat2.py), W: int32(r.bat2.w), H: int32(r.bat2.h)},
@@ -77,8 +75,6 @@ func (r *Game) HardReset() {
 }
 
 func (r *Game) ResetGame() {
-	fmt.Println("Reset Game")
-
 	// ball position is based on who has the serve
 	r.ball.px = r.bat1.w * 2
 
@@ -157,8 +153,6 @@ func (r *Game) CalculateBatSpeed(player int) {
 			r.bat1Speed = batSpeed
 		}
 
-		fmt.Println("Bat speed", r.bat1Speed)
-
 		r.bat1LastMove = time.Now()
 	}
 
@@ -185,7 +179,7 @@ func (r *Game) Tick() (tick chan struct{}, cancel chan struct{}) {
 			r.tick()
 			tick <- struct{}{}
 		}
-		fmt.Println("Cancel game")
+
 		ticker.Stop()
 		cancel <- struct{}{}
 	}()
