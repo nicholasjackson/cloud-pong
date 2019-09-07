@@ -1,4 +1,4 @@
-version=v0.3.0
+version=v0.3.2
 
 protos:
 	protoc -I api/protos/ api/protos/api.proto --go_out=plugins=grpc:api/protos/pong

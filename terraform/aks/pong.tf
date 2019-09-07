@@ -33,7 +33,7 @@ resource "kubernetes_deployment" "pong" {
 
       spec {
         container {
-          image = "nicholasjackson/cloud-pong-api:go-v0.3.0"
+          image = "nicholasjackson/cloud-pong-api:go-v0.3.2"
           name  = "pong-aks"
 
           port {
